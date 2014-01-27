@@ -1,0 +1,373 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>TAXI driver test</title>
+    <meta charset="utf-8"/>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body onload="onLoad()">
+<div class='waitingDiv'>&nbsp;</div>   
+<div id="taxiNews"><button id="btnNewsClose" class="icon ico_back">&nbsp;</button><p id="taxiNewsContent"></p></div>
+
+<!-- Orders -->
+<script id="orders-tpl" type="text/x-handlebars-template">
+<div id="taxiHeader">
+    <div id="taxiText">TAXI</div>
+    <div id="taxiInfo"></div>
+</div>
+
+
+<!--submenu--> 
+<div id="menu">
+<div class='submenu' id="divsubmenu" style="display:none;z-index:10000;">
+    <button data-route="map" class="icon ico_map">&nbsp;</button>
+    <button id="btnHistory"  data-route="history" class="textnoicon">História</button>
+    <button id="btnSetting"  data-route="allsettings" class="textnoicon">Nastavenia</button>
+    <button id ="btnRecallMe" title="Recall me" class="icon ico_phone">&nbsp;</button>
+    <button data-route="states" class="icon ico_stop">&nbsp;</button>
+    <button id="btnStand"  data-route="stand" class="textnoicon">Stanovištia</button>
+</div>
+
+<div class='footer' id="divmenu">
+    <!--<button id="newOrder" class="icon ico_order">&nbsp;</button>&nbsp;-->
+    <button id="newOrder" data-route="autoorder" class="icon ico_order">&nbsp;</button>&nbsp;
+    <button title="Submenu" id="btnSubmenu"  class="icon ico_submenu">&nbsp;</button>&nbsp;
+    <button title="settings"  data-route="settings" class="icon ico_settings">&nbsp;</button>&nbsp;
+    <button id ="btnMessage" title="messages"  data-route="messages" class="icon ico_message">&nbsp;</button>&nbsp;
+    <button id="taxiAlarm" class="icon ico_alarm">&nbsp;</button>
+</div>
+</div>
+<div class="scroll">
+  <div class='buttonlist orders-list'></div>
+  <button id="unbreakButton" class="ico_submit">Ukončiť prestávku</button>
+  <button id="unalarmButton" class="ico_submit">Ukončiť alarm</button>
+</div>
+</script>
+
+<script id="orders-li-tpl" type="text/x-handlebars-template">
+{{#.}}
+<div id="{{this.GUID}}" class="{{this.Status}}" data_GUID_Offer="{{this.GUID_Offer}}" data_StatusOffer="{{this.StatusOffer}}" data_Id="{{this.GUID}}" data_Status="{{this.Status}}">
+
+    {{#if this.StatusCancel}}
+    {{else}}
+    <div class="icon cancel">&nbsp;</div>
+    {{/if}}
+
+    <div class="content">
+    {{#if this.StatusOfferGUI}}
+             <strong>{{this.FormatedDate}} {{this.StatusDescription}}</strong> <br/>
+             {{this.StartCity}} {{this.StartAddress}}<br/>
+             {{this.EndCity}} {{this.EndAddress}}<br/>
+            {{this.Persons}} / {{this.SpecialConditions}}  
+            {{#if Globals.Orders_List_ShowCustomerPhone}}
+            / {{this.CustomerPhone}} 
+            {{/if}}
+            / {{this.CustomerName}} 
+           
+                
+
+    {{else}}
+
+            <strong>{{this.FormatedDate}}</strong> {{this.StartCity}} {{this.StartAddress}}<br/>
+            {{this.EndCity}} {{this.EndAddress}}<br/>
+            {{this.Persons}} / {{this.SpecialConditions}}  
+            {{#if Globals.Orders_List_ShowCustomerPhone}}
+            / {{this.CustomerPhone}} 
+            {{/if}}
+            / {{this.CustomerName}} - <strong>{{this.StatusDescription}}</strong>
+
+     {{/if}}
+    </div>
+
+    
+
+    {{#if this.StatusCancel}}
+        <div class="icon confirmCancel">&nbsp;</div>
+    {{else}}
+        <div class="icon up">&nbsp;</div>
+    {{/if}}
+ </div>
+{{/.}}
+</script>
+
+<!-- Stand -->
+<script id="stand-tpl" type="text/x-handlebars-template">
+<div class='header' id="standHeader">
+    <button id="standBack" class="icon ico_back">&nbsp;</button>
+    <button id="standTitle" class="textHeaderTitle" disabled="disabled">Stanovištia</button>
+</div>
+<div class="scrollBottom"><div class='buttonlist stand-list'></div></div>
+</script>
+
+ <script id="stand-li-tpl" type="text/x-handlebars-template">
+{{#.}}
+<div  class="{{this.Status}}" data_Id="{{this.GUID}}">
+    <div class="content"><strong> {{this.Title}}  </strong><br />
+        Maximum: {{this.MaxPlaces}} / Voľné: {{this.FreePlaces}} /  Pozícia: {{this.StandPosition}}
+    </div>
+    {{#if this.CanStand}}
+        <div  class="icon up forstandup" data_Id="{{this.GUID}}">&nbsp;</div>
+    {{/if}}
+    {{#if this.CanLeave}}
+        <div class="icon cancel forstanddown">&nbsp;</div>
+    {{/if}}
+
+</div>
+{{/.}}
+</script>
+
+<!-- OrdersHistory -->
+<script id="ordersHistory-tpl" type="text/x-handlebars-template">
+<div class='header'><button id="historyBack" class="icon ico_back">&nbsp;</button>
+    <button id="historyTitle" class="textHeaderTitle" disabled="disabled">História</button>
+    <div style="position:absolute; left:200px; top:2px; right:0px;">
+    <select id="selectHistory">
+        <option value="2h">Posledné 2 hodiny</option>
+        <option value="24h">Posledných 24 hodín</option>
+        <option value="My24h">Moje za 24 hod.</option>
+        <option value="MyTodayTab">Moje dnes</option>
+        <option value="MyYestTab">Moje včera</option>
+    </select>
+ </div>
+</div>
+<div class="scrollBottom"><div class='buttonlist ordersHistory-list'></div></div>
+</script>
+
+<script id="ordersHistory-li-tpl" type="text/x-handlebars-template">
+{{#.}}
+<div data_Id="{{this.GUID}}" data_Status="{{this.Status}}" class="{{this.Status}}">
+    <div class="content"><strong>[{{this.iOrder}}] {{this.FormatedDate}}</strong> {{this.StatusDescription}} odkiaľ: {{this.StartCity}} {{this.StartAddress}}, kam: {{this.EndCity}} {{this.EndAddress}}, zdroj: {{this.OrderSource}}, kto: {{this.DriverTitle}}</div>
+</div>
+{{/.}}
+</script>
+
+<script id="ordersHistoryraw-li-tpl" type="text/x-handlebars-template">
+{{#.}}
+<div>
+    <div class="content"><strong>{{this.GUID}} {{this.freetext}} </strong></div>
+</div>
+{{/.}}
+</script>
+
+<script id="ordersHistorytab-li-tpl" type="text/x-handlebars-template">
+{{#.}}
+<div class="{{this.Status}}">
+    <div class="content"><strong>{{this.StatusDescription}} : {{this.Pocet}} </strong></div>
+</div>
+{{/.}}
+        
+</script>
+
+
+<!-- OrderDetail -->
+<script id="orderDetail-tpl" type="text/x-handlebars-template">
+    <div class='header'>
+        <!--<button id="orderDetailBack" class="icon ico_back">&nbsp;</button>-->
+        <!--<button id="orderCall" class="icon ico_phone">&nbsp;</button>-->
+    
+        <div id="orderDetailTabs" class="tabs">
+            <button id="orderDetailBack" class="icon ico_back">&nbsp;</button>
+            <button id="orderCall" class="icon ico_phone">&nbsp;</button>
+            <div id="orderTimeTab" class="selected">Čas</div>
+            <div id="orderDetailTab">Detail</div>
+            <div id="orderMapTab">Mapa</div>
+        </div>
+    
+    </div>    
+
+    <div id="orderDetailContent" class="scrollBottom">
+        <div id="orderDetailTime">
+            <button id="orderDetailSave" class="icon texticon ico_submit">&nbsp;</button>
+               <input type="hidden" id="OrderTimeToRealize" name="TimeToRealize"/>
+              <div id="OrderTimeToRealizeRadio" class="radiolist">
+                <div data_value="3">3 min</div>
+                <div data_value="5">5 min</div>
+                <div data_value="7">7 min</div>
+                <div data_value="10">10 min</div>
+                <div data_value="15">15 min</div>
+                <div data_value="20">20 min</div>
+                <div data_value="30">30 min</div>
+                <div data_value="45">45 min</div>
+                <div data_value="60">1 hod</div>
+                <div data_value="90">1,5 hod</div>
+                <div data_value="120">2 hod</div>
+                <div data_value="240">4 hod</div>
+            </div>
+            
+        </div>
+        <form id="orderDetailForm"></form>
+        <div id="orderDetailMap"></div>
+    </div>
+</script>
+
+<script id="orderDetailForm-tpl" type="text/x-handlebars-template">
+    <div>
+        <strong>{{this.FormatedDate}} {{this.StatusDescription}}</strong>
+    </div>
+    <div>
+        <strong>Odkiaľ:</strong> {{this.StartCity}} {{this.StartAddress}}
+    </div>
+     {{#if this.EndCity}}
+    <div>
+        <strong>Kam:</strong> {{this.EndCity}} {{this.EndAddress}}
+    </div>
+     {{/if}}
+    <div>
+        <strong>Kontakt:</strong> {{this.CustomerName}} 
+       {{#if Globals.Orders_List_ShowCustomerPhone}}
+            {{this.CustomerPhone}} 
+       {{/if}}
+    </div>
+     {{#if this.Persons}}
+    <div>
+        <strong>Počet pasažierov:</strong> {{this.Persons}}
+    </div>
+     {{/if}}
+     {{#if this.SpecialConditions}}
+    <div>
+        <strong>Špeciálne požiadavky:</strong> {{this.SpecialConditions}}
+    </div>
+     {{/if}}
+    {{#if this.ErrorMessage}}
+    <div class="error">{{this.ErrorMessage}}</div>
+     {{/if}}
+</script>
+
+<!-- States -->
+<script id="states-tpl" type="text/x-handlebars-template">
+<div class='header'><button data-route="orders" class="icon ico_back">&nbsp;</button>
+    <button id="statesTitle" class="textHeaderTitle" disabled="disabled">Prerušenia</button>
+    <button id="statesSave" class="icon texticon ico_submit">Prerušiť</button>
+</div>
+<div class="scrollBottom"><form id="statesForm"></form></div>
+</script>
+
+<script id="statesForm-template" type="text/x-handlebars-template">
+<select id="HistoryAction" name="HistoryAction">
+    <option value="Vlastná aktivita">Vlastná aktivita</option> 	
+    <option value="Prestávka">Prestávka</option>
+    <option value="Porucha">Porucha</option>
+</select>
+<select id="TimeToFree" name="TimeToFree"> 	
+        <option value="5">5 min</option>
+        <option value="10">10 min</option>
+        <option value="15">15 min</option>
+        <option value="30">30 min</option>
+        <option value="45">45 min</option>
+        <option value="60">1 hod</option>
+        <option value="120">2 hod</option>
+        <option value="240">4 hod</option>
+</select>
+<input  name="HistoryActionDescription" value="{{this.HistoryActionDescription}}" type="text" placeholder="Poznámkaa" />
+<input  name="Payment" type="number" value="{{this.Payment}}" placeholder="Cena" />
+{{#if this.ErrorMessage}}<div class="error">{{this.ErrorMessage}}</div>{{/if}}
+</script>
+
+    <!-- AutoOrder -->
+<script id="autoorder-tpl" type="text/x-handlebars-template">
+<div class='header'><button data-route="orders" class="icon ico_back">&nbsp;</button>
+    <button id="autoorderTitle" class="textHeaderTitle" disabled="disabled">Automat. objednávka</button>
+    <button id="autoorderSave" class="icon texticon ico_submit">Potvrdiť</button>
+</div>
+<div class="scrollBottom"><form id="autoorderForm"></form></div>
+</script>
+
+<script id="autoorderForm-template" type="text/x-handlebars-template">
+<input id="AutoOrderEndCity"  name="EndCity" value="{{this.EndCity}}" type="text" placeholder="Kam mesto" />
+<input id="AutoOrderEndAddress" name="EndAddress" value="{{this.EndAddress}}" type="text" placeholder="Kam adresa"  />
+ <input id="AutoOrderTimeToRealize" name="TimeToRealize" value="{{this.TimeToRealize}}" type="number" placeholder="min." />
+{{#if this.ErrorMessage}}<div class="error">{{this.ErrorMessage}}</div>{{/if}}
+</script>
+
+<!-- Message -->
+<script id="message-tpl" type="text/x-handlebars-template">
+<div class='header'>
+    <button data-route="orders" class="icon ico_back">&nbsp;</button>
+    <button id="messTitle" class="textHeaderTitle" disabled="disabled">Správy</button>
+</div>
+    <div>
+    {{#.}}
+        <div>
+            <div class="content"><strong>Správa: {{this.MessageText}} {{this.FormatedDate}}</strong></div>
+        </div>
+    {{/.}}
+   </div>
+</script>
+
+<!-- Settings -->
+<script id="settings-tpl" type="text/x-handlebars-template">
+<div class='header'>
+    <button data-route="orders" id="settingsOrders" class="icon ico_back">&nbsp;</button>
+    <button id="settTitle" class="textHeaderTitle" disabled="disabled">Login/adresa</button>
+    <button id="settingsSave" class="icon ico_submit transparent">&nbsp;</button>
+    <button id="appExit" class="icon ico_end">&nbsp;</button>
+</div>
+<div id="settingsForm" class='scrollBottom'></div>
+</script>
+
+<!-- Settings detail-->
+<script id="settingsForm-tpl" type="text/x-handlebars-template">
+<form id="settingsForm-form">
+
+    <input type="url" placeholder="Adresa služby" name="url" id="url" value="{{this.url}}"/>  
+    <input type="text" placeholder="Meno" name="name" id="name" value="{{this.name}}"/>
+    <input type="password" placeholder="Heslo" name="password" id="password" value="{{this.password}}"/>
+    <select name="transporterId" id="transporterId">
+        <option value="" style="color:#f00;">Vyberte vozidlo</option>
+        {{#each this.transportes}}
+         <option value="{{Id}}" {{#if selected}} selected="selected"{{/if}}>{{SPZ}}</option>
+        {{/each}}
+    </select>     
+    {{#if this.ErrorMessage}}<div class="error">{{this.ErrorMessage}}</div>{{/if}}
+</form>
+</script>
+
+<!-- Settings ALL master -->
+<script id="settingsall-tpl" type="text/x-handlebars-template">
+<div class='header'>
+    <button data-route="orders" id="settingsallOrders" class="icon ico_back">&nbsp;</button>
+    <button id="settAll" class="textHeaderTitle" disabled="disabled">Nastavenia</button>
+    <button id="settingsallSave" class="icon texticon ico_submit">Uložiť</button>
+</div>
+     <div id="settingsallForm" class="scrollBottom"></div>
+</script>
+
+ <!-- Settings ALL detail -->
+ <script id="settingsallForm-tpl" type="text/x-handlebars-template">
+<form id="settingsallForm-form">
+            {{#.}}
+                <div class="content"><strong>{{this.Group}}  {{this.Title}} {{this.value}} </strong></div>
+            {{/.}}
+        
+    <!--{{#if this.ErrorMessage}}<div class="error">{{this.ErrorMessage}}</div>{{/if}}-->
+    
+</form>
+</script>
+
+
+<script src="phonegap.js"></script>
+<script src="lib/json2.js"></script>    
+<script src="lib/jquery-1.8.2.min.js"></script>
+<script src="lib/handlebars.js"></script>
+<script src="lib/iscroll.js"></script>
+<script src="Scripts/PositionService.js"></script>
+<script src="Scripts/Service.js"></script>
+<script src="Scripts/OrdersView.js"></script>
+<script src="Scripts/OrdersHistoryView.js"></script>
+<script src="Scripts/StandView.js"></script>
+<script src="Scripts/OrderDetail.js"></script>
+<script src="Scripts/MessageView.js"></script>
+<script src="Scripts/StatesView.js"></script>
+<script src="Scripts/MapView.js"></script>
+<script src="Scripts/DetailMap.js"></script>
+<script src="Scripts/SettingsView.js"></script>
+<script src="Scripts/SettingsAllView.js"></script>
+<script src="Scripts/Globals.js"></script>
+<script src="Scripts/Errors.js"></script>
+<script src="Scripts/Lists.js"></script>
+<script src="Scripts/main.js"></script>
+<script src="Scripts/NotificationLocal.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=false&callback=Map.apiOK"></script>
+<script src="Scripts/AutoOrderView.js"></script>
+</body>
+</html>

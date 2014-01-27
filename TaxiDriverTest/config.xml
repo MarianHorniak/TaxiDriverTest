@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns       = "http://www.w3.org/ns/widgets"
+        xmlns:gap   = "http://phonegap.com/ns/1.0"
+        id          = "sk.datastream.taxi"
+        versionCode = "432"
+        version     = "1.4.32">
+ 
+    <name>TAXI Driver test</name>
+  
+    <description>
+        TAXI Driver test application
+    </description>
+ 
+    <author href="http://www.datastream.sk" email="mhp@datastream.sk">
+        Peter Kotry
+    </author>
+  <icon src="img/phoneicon.png" />
+    
+  <preference name="load-url-timeout" value="60000" />
+  <preference name="phonegap-version" value="2.9.0" />
+  <preference name="DisallowOverscroll" value="true" />
+
+    <access origin="*" />
+    
+    <feature name="http://api.phonegap.com/1.0/geolocation"/>
+    <feature name="http://api.phonegap.com/1.0/network"/>
+</widget>
