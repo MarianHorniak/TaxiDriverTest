@@ -137,6 +137,8 @@
             PositionService.stopWatch();
             Service.isAuthenticated = false;
             var s = Service.getSettings();
+            //notify local 
+            NotificationLocal.Notify("logout",s, null, null);
             Service.callService("TaxiSetHistory", {
                 GUID_Transporter: s.transporterId,
                 GUID_sysUser_Driver: null,
@@ -340,6 +342,48 @@
                 app.home(true);
             });
     },
+
+    sendNewMessage: function (MessageType, MessageText, LifeTimeMinutes, isAnswer, needAnswer, SenderRole, ReceiverRole, GUID_sysUser_Sender, GUID_sysUser_Receiver, Latitude, Longitude) {
+        app.waiting();
+        Service.callService("SendMessage", {
+            MessageType: MessageType,
+            MessageText: MessageText,
+            LifeTimeMinutes: LifeTimeMinutes,
+            isAnswer: isAnswer,
+            needAnswer: needAnswer,
+            SenderRole:SenderRole,
+            ReceiverRole: ReceiverRole,
+            GUID_sysUser_Sender: GUID_sysUser_Sender,
+            GUID_sysUser_Receiver:GUID_sysUser_Receiver,
+            Latitude: Latitude,
+            Longitude: Longitude,
+
+        },
+            function () {
+                app.home(true);
+            },
+            function (d) {
+                app.info(d.ErrorMessage);
+                app.home(true);
+            });
+    },
+
+    deleteMessage: function (GUID) {
+        app.waiting();
+        console.log("delete 1 message: " + GUID);
+        Service.callService("DeleteMessage", {
+            GUID: GUID
+
+        },
+            function () {
+                app.home();
+            },
+            function (d) {
+                app.info(d.ErrorMessage);
+                app.home();
+            });
+    },
+
     recallOrder: function (callback) {
         app.waiting();
         var s = Service.getSettings();

@@ -17,28 +17,31 @@
         if (Map.apiIsOk) {
             DetailMap.point = new google.maps.LatLng(lat, lng);
 
+            //icon: { url: "http://maps.gstatic.com/mapfiles/ms2/micons/man.png" },
+            //icon: { url: "http://maps.gstatic.com/mapfiles/ms2/micons/cabs.png" },
+
             if (!DetailMap.map) {
                 DetailMap.mapDiv.css("display", "block");
                 DetailMap.map = new google.maps.Map(DetailMap.mapDiv[0], { zoom: 15, disableDefaultUI: true, mapTypeId: google.maps.MapTypeId.ROADMAP });
                 DetailMap.map.setCenter(DetailMap.point);
                 DetailMap.marker = new google.maps.Marker({
                     clickable: false,
-                    icon: { url: "http://maps.gstatic.com/mapfiles/ms2/micons/man.png" },
-                    shadow: new google.maps.MarkerImage("http://maps.gstatic.com/mapfiles/ms2/micons/man.shadow.png",
-                    new google.maps.Size(59.0, 32.0),
-                    new google.maps.Point(0, 0),
-                    new google.maps.Point(16.0, 32.0)
-                    ),
+                    icon: { url: "img/man.png" },
+                    //shadow: new google.maps.MarkerImage("http://maps.gstatic.com/mapfiles/ms2/micons/man.shadow.png",
+                    //new google.maps.Size(59.0, 32.0),
+                    //new google.maps.Point(0, 0),
+                    //new google.maps.Point(16.0, 32.0)
+                    //),
                     map: DetailMap.map
                 });
                 DetailMap.tmarker = new google.maps.Marker({
 
-                    icon: { url: "http://maps.gstatic.com/mapfiles/ms2/micons/cabs.png" },
-                    shadow: new google.maps.MarkerImage("http://maps.gstatic.com/mapfiles/ms2/micons/cabs.shadow.png",
-                    new google.maps.Size(59.0, 32.0),
-                    new google.maps.Point(0, 0),
-                    new google.maps.Point(16.0, 32.0)
-                    ),
+                    icon: { url: "img/cabs.png" },
+                    //shadow: new google.maps.MarkerImage("http://maps.gstatic.com/mapfiles/ms2/micons/cabs.shadow.png",
+                    //new google.maps.Size(59.0, 32.0),
+                    //new google.maps.Point(0, 0),
+                    //new google.maps.Point(16.0, 32.0)
+                    //),
                     clickable: false,
                     map: DetailMap.map
                 });

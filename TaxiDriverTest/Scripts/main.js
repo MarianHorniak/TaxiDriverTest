@@ -28,14 +28,23 @@
     alertDismissed: function(message) {
         ErrorStorage.removeError(message);
     },
+
     showNews: function (content) {
-        $("#taxiNewsContent").html(content);
-        $("#taxiNews").show();
-        app.playNew();
-        window.setTimeout(function () { app.hideNews(); }, 10000);
+        var soundFile = "audio/sound_new.mp3";
+        app.showNewsComplete(Translator.Translate("Warning"), soundFile, "", 10000, content)
     },
+
+    showNewsComplete: function (title, soundFile, color, hideinmilisec, content) {
+        if (!soundFile | soundFile=="") soundFile = "audio/sound_new.mp3";
+        $("#taxiNewsContent").html(content);
+        $("#taxiNewsTitle").html(title);
+        $("#taxiNewFull").show(200);
+        app.playSound(soundFile);
+        window.setTimeout(function () { app.hideNews(); }, hideinmilisec);
+    },
+
     hideNews: function () {
-        $("#taxiNews").hide();
+        $("#taxiNewFull").hide(100);
     },
     tabSelector: function (tabName, pageName) {
         var tabCtrl = document.getElementById(tabName);
@@ -211,6 +220,8 @@
                 case "settings": page = new SettingsView(); break;
                 case "detail": page = new OrderDetail(); break;
                 case "autoorder": page = new AutoOrderView(); break;
+                case "messagenew": page = new MessageNewView(); break;
+
                 default: this.showAlert("Undefined page:" + p, "ERROR"); return;
             }
             this.pages[p] = page;

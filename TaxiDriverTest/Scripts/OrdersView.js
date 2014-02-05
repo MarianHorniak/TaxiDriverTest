@@ -145,6 +145,8 @@ var OrdersView = function () {
 
         //notify
         NotificationLocal.Notify("changeOffer", data, null, null);
+        NotificationLocal.Notify("changeOffer"+action, data, null, null);
+
 
         //pre ponuku sa povodne islo do detailu, ale to zmenime. 
         //if(action == "Up" && (data.Status == "New" || data.Status == "Offered"))

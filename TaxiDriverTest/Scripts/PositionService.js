@@ -14,7 +14,7 @@ var PositionService = {
                 navigator.geolocation.clearWatch(this.watchID);
 
             this.watchID = navigator.geolocation.watchPosition(function (position) {
-                app.info("Presnosť pozície: " + position.coords.accuracy + "m");
+                app.info(Translator.Translate("Presnosť pozície") + ": " + position.coords.accuracy + "m");
                 PositionService.lat = position.coords.latitude;
                 PositionService.lng = position.coords.longitude;
             }, function (err) {
@@ -70,10 +70,25 @@ var PositionService = {
                 //app.info("Posielam ...");
                 var s = Service.getSettings();
 
+                //store previous position
+                Globals.Position_LatPrev = Globals.Position_Lat;
+                Globals.Position_LngPrev = Globals.Position_Lng;
+
+
                 var posChanged = PositionService._lat != PositionService.lat && PositionService._lng != PositionService.lng;
+
+
+
+                
                 if (posChanged) {
                     PositionService._lat = PositionService.lat;
                     PositionService._lng = PositionService.lng;
+                    Globals.Position_Lat = PositionService.lat;
+                    Globals.Position_Lng = PositionService.lng;
+                
+                    //stanoviste - zmena ! 
+                    Stand.CheckStandAvailable();
+
                 }
 
                 Service.callService("MobilePool", {

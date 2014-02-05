@@ -5,12 +5,13 @@ var MapView = function (store) {
         this.el = $('<div/>');
     };
 
-    this.render = function() {
+    this.render = function () {
         Map.initialize(this.el);
         return this;
     };
 
-    this.onShow = function(){
+    this.onShow = function () {
+        Map.getData();
         Map.showPosition();
     }
 
@@ -20,10 +21,13 @@ var MapView = function (store) {
 var Map = {
     date: null,
     marker: null,
+    markers: [],
     map: null,
+    datatransporters:null,
     mapOut: null,
     mapMessage: null,
     mapDiv: null,
+    mapOut2: null,
     mess: null,
     messError: null,
     geocoder: null,
@@ -32,33 +36,86 @@ var Map = {
         var header = $('<div class="header"><button data-route="orders" class="icon ico_back">&nbsp;</button></div>').appendTo(el);
         var sc = $('<div class="scrollBottom"/>').appendTo(header);
         Map.mapDiv = $('<div id="mapDiv"/>').appendTo(sc);
+        
+
         Map.mapMessage = $('<div id="mapMessage">Waiting ...</div>').appendTo(sc);
         Map.mapOut = $('<div id="mapOut"/>').appendTo(header);
+        Map.mapOut2 = $('<div id="mapOut2"/>').appendTo(header);
 
+        //Service.callService()
         if (Map.mess) {
             Map.message(Map.mess, Map.messError);
         }
+        Map.mapDiv.css("display", "block");
+        Map.map = new google.maps.Map(Map.mapDiv[0], { zoom: 15, disableDefaultUI: true, mapTypeId: google.maps.MapTypeId.ROADMAP });
+        google.maps.event.trigger(Map.map, "resize");
+    },
+    getData: function () {
+        for (var i = 0; i < Map.markers.length; i++) {
+            Map.markers[i].setMap(null);
+        }
+        Map.markers = [];
+        console.log("get map view data");
+        var self = this;
+        var s = Service.getSettings();
+        Service.callService("datamobile", { Id: "viewWebClientTransporters" },
+            function (result) {
+                Map.mapOut2.html(Translator.Translate("Počet") + ": " + result.Items.length);
+                self.datatransporters = result;
+                console.log("get map view data " + result.Items.length);
+                $.each(self.datatransporters.Items, function () {
+                    var item = this;
+                    var m = new google.maps.Marker({
+                        //icon: { url: "img/cabs.png" },
+                        position: new google.maps.LatLng(item.Latitude, item.Longitude),
+                        clickable: false,
+                        map: Map.map
+                    });
+                    Map.markers.push(m);
+                });
+            }
+         );
+
     },
     apiOK: function () {
         Map.apiIsOk = true;
         Map.geocoder = new google.maps.Geocoder();
     },
+    showPosition: function () {
+        Map.message("Hľadám pozíciu ...");
+        try {
+            navigator.geolocation.getCurrentPosition(Map.success, Map.error, { enableHighAccuracy: true }); //, { frequency: 2000 }
+        }
+        catch (err) {
+            Map.message(err.message, true);
+        }
+    },
     success: function (position) {
+        var self = this;
         Map.date = new Date().toTimeString();
         Map.message("Pozícia " + Map.date);
-        var d = 'Latitude: ' + position.coords.latitude + '<br />' +
-       'Longitude: ' + position.coords.longitude + '<br />' +
-        "Presnosť pozície: " + position.coords.accuracy + "m";
+        var d = Translator.Translate('Lat.')+': ' + position.coords.latitude + '  ' +
+        Translator.Translate('Long.')+': ' + position.coords.longitude + '<br />' +
+        Translator.Translate('Presnosť')+': ' + position.coords.accuracy + "m" + '<br />';
+        var ddop = "";
+        Map.geocode({ 'latLng': new google.maps.LatLng(position.coords.latitude, position.coords.longitude) }, function (a) {
+            ddop = Translator.Translate('Address')+': ' + a.City + ' ' + a.Address;
+            Map.mapOut.html(d + ddop);
+            Map.setMap(position);
+            PositionService.lat = position.coords.latitude;
+            PositionService.lng = position.coords.longitude;
+
+        });
        //'Altitude: ' + position.coords.altitude + '<br />' +
        //'Accuracy: ' + position.coords.accuracy + '<br />' +
        //'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '<br />' +
        //'Heading: ' + position.coords.heading + '<br />' +
        //'Speed: ' + Math.ceil(position.coords.speed * 3.6) + ' km/h<br />';// +
         //'Timestamp: ' + new Date(position.timestamp) + '<br />';
-        Map.mapOut.html(d);
-        Map.setMap(position);
-        PositionService.lat = position.coords.latitude;
-        PositionService.lng = position.coords.longitude;
+        //Map.mapOut.html(d + ddop);
+        //Map.setMap(position);
+        //PositionService.lat = position.coords.latitude;
+        //PositionService.lng = position.coords.longitude;
     },
     error: function (err) {
         Map.message("Error: " + err.message, true);
@@ -76,32 +133,24 @@ var Map = {
     setMap: function (position) {
         try {
             if (Map.apiIsOk) {
+
+                console.log("point set");
                 Map.point = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                 if (!Map.marker) {
-                    Map.mapDiv.css("display", "block");
-                    Map.map = new google.maps.Map(Map.mapDiv[0], { zoom: 15, disableDefaultUI: true, mapTypeId: google.maps.MapTypeId.ROADMAP });
-                    Map.map.setCenter(Map.point);
                     Map.marker = new google.maps.Marker({
+                        icon: { url: "img/cabs.png" },
                         clickable: false,
                         map: Map.map
                     });
                 }
-                google.maps.event.trigger(Map.map, "resize");
                 Map.map.setCenter(Map.point);
                 Map.marker.setPosition(Map.point);
+                
+
             }
             else {
                 Map.message("Mapy sú nedostupné", true);
             }
-        }
-        catch (err) {
-            Map.message(err.message, true);
-        }
-    },
-    showPosition: function () {
-        Map.message("Hľadám pozíciu ...");
-        try {
-            navigator.geolocation.getCurrentPosition(Map.success, Map.error, { enableHighAccuracy: true }); //, { frequency: 2000 }
         }
         catch (err) {
             Map.message(err.message, true);

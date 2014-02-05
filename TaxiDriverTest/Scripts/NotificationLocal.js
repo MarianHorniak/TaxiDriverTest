@@ -9,6 +9,15 @@
 
                 switch (notificationType.toLowerCase())
                 {
+                    case "changeofferdown":
+                        break;
+
+                    case "changeofferup":
+                        Stand.LeaveStand();
+                        break;
+
+                    case "changeoffer":
+                        break;
 
                     case "autoorder":
                         Stand.LeaveStand();
@@ -22,6 +31,13 @@
                         Stand.LeaveStand();
                         break;
 
+                    case "logout":
+                        Stand.LeaveStand();
+                        break;
+
+                    case "login":
+                        Stand.LeaveStand();
+                        break;
 
                 }
                 if(successCallback) successCallback();

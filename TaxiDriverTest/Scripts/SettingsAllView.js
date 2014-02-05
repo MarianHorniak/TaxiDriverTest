@@ -38,6 +38,14 @@ var SettingsAllView = function (messages) {
         data[4] = { Group: "Stand", Title: "GLOB_GUID_Stand", value: Globals.GLOB_GUID_Stand };
         data[5] = { Group: "Stand", Title: "GLOB_StandPosition", value: Globals.GLOB_StandPosition };
 
+        data[6] = { Group: "Position", Title: "Position_LatPrev", value: Globals.Position_LatPrev };
+        data[7] = { Group: "Position", Title: "Position_LngPrev", value: Globals.Position_LngPrev };
+        data[8] = { Group: "Position", Title: "Position_Lat", value: Globals.Position_Lat };
+        data[9] = { Group: "Position", Title: "Position_Lng", value: Globals.Position_Lng };
+
+        data[10] = { Group: "Locale", Title: "Language", value: Globals.language };
+
+
         self.showForm(data);
     };
 
