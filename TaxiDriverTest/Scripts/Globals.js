@@ -35,7 +35,9 @@
         myGUID : "",
         myTicket : "",
 
-
+        //LOG + tracer
+        traceMessage : "",
+        
 
         //CONSTANTS
         constants: {

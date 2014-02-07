@@ -202,7 +202,7 @@ var Stand = {
                 Stand.lastOffer = Date.now();
                 var content = Translator.Translate("Vo vašej blízkosti sa nachádza stanovište")+" : "+StandNear + "<br/><button id=\"btnStand\"  data-route=\"stand\" class=\"textnoicon\">Stanovištia</button>";
                 //app.showNew();
-                app.showNewsComplete(Translator.Translate("Stanovište v blízkosti"), Media.getNewsSoundFile("StandAvailable"), "", 10000, content);
+                app.showNewsComplete(Translator.Translate("Stanovište v blízkosti"), MediaInternal.getNewsSoundFile("StandAvailable"), "", 10000, content);
             }
         }
             //je na stanovisku, odosiel ? 
@@ -210,7 +210,7 @@ var Stand = {
             if (Distanceminkm > Globals.constants.Stand_Distancekm)
             {
                 console.log("Leave stand automat!!");
-                app.playSound(Media.getNewsSoundFile("StandLeave"));
+                app.playSound(MediaInternal.getNewsSoundFile("StandLeave"));
                 Stand.LeaveStand();
             }
         }

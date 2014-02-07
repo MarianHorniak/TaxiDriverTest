@@ -83,8 +83,11 @@
         }
     },
     playNew: function(){
-        if(app.mediaNew)
+        if (app.mediaNew) {
+            app.log("app play new execute");
+            console.log("app play new execute");
             app.mediaNew.play();
+        }
     },
 
     playSound: function (soundFile) {

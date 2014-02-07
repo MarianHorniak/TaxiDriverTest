@@ -21,7 +21,7 @@
 /// <reference path="NotificationLocal.js" />
 /// <reference path="AutoOrderView.js" />
 /// <reference path="Geo.js" />
-/// <reference path="Media.js" />
+/// <reference path="MediaInternal.js" />
 
 
 

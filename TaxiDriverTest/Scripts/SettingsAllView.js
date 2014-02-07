@@ -45,6 +45,8 @@ var SettingsAllView = function (messages) {
 
         data[10] = { Group: "Locale", Title: "Language", value: Globals.language };
 
+        data[11] = { Group: "Log", Title: "Trace", value: Globals.traceMessage };
+
 
         self.showForm(data);
     };

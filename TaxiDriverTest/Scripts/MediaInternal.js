@@ -1,4 +1,4 @@
-﻿var Media =
+﻿var MediaInternal =
     {
         getNewsSoundFile: function (NewsTitle) {
 

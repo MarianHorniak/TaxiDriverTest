@@ -111,6 +111,8 @@ var PositionService = {
         
         if ((d.DataCheckSum && d.DataCheckSum != Service.ordersVer)) {
             Service.ordersVer = d.DataCheckSum;
+            console.log("app play new call");
+            app.log("app play new call");
             app.playNew();
             app.refreshData(["orders", "transporters"]);
         }
