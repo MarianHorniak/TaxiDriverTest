@@ -28,6 +28,7 @@ var MessageView = function () {
         var guid = item.attr("id");
         app.waiting();
         Service.deleteMessage(guid);
+        //Service.messages
         app.waiting(false);
     }
 
@@ -42,17 +43,6 @@ var MessageView = function () {
 
                 //original
                 $(".cancel").click(function () { self.delete1Mess($(this).parent()); });
-                //$(".cancel").click(function () { self.delete1Mess(this); });
-
-
-                //zo servra stands
-                //.dblclick(function (item) { return function (ev) { self.removeCarfromStand(item.GUID, item.GUID_Transporter, item.StandTitle, item.TaxiTitle); } } (item));
-
-                //skuska
-                //for (var i = 0, l = data.length; i < l; i++) {
-                //    var item = data[i];
-                //    $(".cancel").click(function (item) { return function (ev) { self.delete1Mess(item); } } (item));
-                //}
 
                 if (data)
                     $("#messNumber").text = " [" + data.length+"]";

@@ -65,12 +65,18 @@ var Map = {
                 console.log("get map view data " + result.Items.length);
                 $.each(self.datatransporters.Items, function () {
                     var item = this;
-                    var m = new google.maps.Marker({
+                    var m = new  google.maps.Marker({
                         //icon: { url: "img/cabs.png" },
+                        //labelContent: 'A',
                         position: new google.maps.LatLng(item.Latitude, item.Longitude),
+                        title:item.Title,
                         clickable: false,
                         map: Map.map
                     });
+
+                    //m.setTitle(item.Title);
+                    //m.setIcon(app.getIconUrl(item, true));
+
                     Map.markers.push(m);
                 });
             }

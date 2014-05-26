@@ -84,8 +84,7 @@
     },
     playNew: function(){
         if (app.mediaNew) {
-            app.log("app play new execute");
-            console.log("app play new execute");
+            app.mediaNew.volume = Globals.Media_Volume;
             app.mediaNew.play();
         }
     },
@@ -94,6 +93,7 @@
         window.setTimeout(function () {
             if (soundFile) {
                 var toplay = new Audio(soundFile);
+                toplay.volume = Globals.Media_Volume;
                 toplay.play();
             }
         }, 1);

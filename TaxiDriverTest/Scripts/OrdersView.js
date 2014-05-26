@@ -124,6 +124,7 @@ var OrdersView = function () {
 
         btn.removeClass().addClass("refWaiting");
 
+        var currentOrder = Service.orders.Current = Service.findOrder(btn.attr("data_Id"));
         
 
         var settings = Service.getSettings(), self = this;
@@ -139,8 +140,11 @@ var OrdersView = function () {
             Longitude: PositionService.lng
         };
 
-        //dame defaultny cas na vybavenie 
-        data.TimeToRealize = Globals.constants.OrderDetail_Defauls_timeToRealize;
+        ////dame defaultny cas na vybavenie 
+        //data.TimeToRealize = Globals.constants.OrderDetail_Defauls_timeToRealize;
+        //if (currentOrder) //alebo ten, co uz mame !
+        //    data.TimeToRealize = currentOrder.TimeToRealize;
+
         //data.TimeToRealizeFrom = Date.UTC;
 
         //notify

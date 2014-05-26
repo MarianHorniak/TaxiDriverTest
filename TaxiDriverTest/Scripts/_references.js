@@ -22,6 +22,7 @@
 /// <reference path="AutoOrderView.js" />
 /// <reference path="Geo.js" />
 /// <reference path="MediaInternal.js" />
+/// <reference path="Diagnostic.js" />
 
 
 

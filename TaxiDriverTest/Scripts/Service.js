@@ -360,7 +360,7 @@
 
         },
             function () {
-                app.home(true);
+                app.route("messages");
             },
             function (d) {
                 app.info(d.ErrorMessage);
@@ -376,7 +376,7 @@
 
         },
             function () {
-                app.home();
+                app.route("messages");
             },
             function (d) {
                 app.info(d.ErrorMessage);

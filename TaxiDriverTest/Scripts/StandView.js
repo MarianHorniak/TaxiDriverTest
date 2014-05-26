@@ -8,6 +8,10 @@
     this.render = function () {
         var self = this;
         this.el.html(StandView.template());
+
+        //close modal New window
+        app.hideNews();
+
         $("#standBack").click(function () { app.home(); });
         //klik na header
         $("#standHeader").click(function () {
@@ -35,6 +39,12 @@
     {
         var self = this;
 
+        //zavreme news okno
+        app.hideNews();
+
+        //nastavime stand poslednu ponuku
+        Stand.lastOffer = Date.now();
+
         $('.stand-list').html(StandView.liTemplate(standresult.Items));
         if (self.iscroll)
             self.iscroll.refresh();
@@ -44,7 +54,7 @@
 
         //klik na join stand
         $(".forstandup").click(function (item) {
-            
+            item.stopPropagation();
             var data_id = item.currentTarget.getAttribute("data_id");
             self.joinStand(data_id);
         });
@@ -101,9 +111,13 @@
 
     this.getData = function (e)
     {
-        console.log("get data stands");
+        Diagnostic.log("get data stands");
         var self = this;
         var s = Service.getSettings();
+
+        //set icon on main index
+        Stand.setIcon();
+
         Service.callService("datamobile", { Id: "viewStandsForDriver", GUID_Transporter : s.transporterId },
             function (standresult) {
                 self.upravData(standresult);
@@ -121,9 +135,16 @@
         var self = this;
         app.log("Join stand:" + standGUID);
 
+        //mhp test toto funguje, inak sa zavola alarm ak sa buttony prekryvaju
+        //self.joinStandasync(standGUID);
+
+        //window.setTimeout(function () {
+        //    self.joinStandasync(standGUID);
+        //}, 100);
+
         window.setTimeout(function () {
             self.joinStandasync(standGUID);
-        }, 100);
+        });
 
         console.log("joinStand end");
 
@@ -131,8 +152,13 @@
     }
 
     this.joinStandasync = function (standGUID) {
+
+        //standGUID.stopPropagation();
+
         var self = this;
         app.log("Join stand:" + standGUID);
+
+        
 
         var s = Service.getSettings();
         Service.callService("TransporterJoinStand", {
@@ -147,30 +173,68 @@
                         console.log("Join stand OK delegate : " + standGUID);
                         Globals.GLOB_GUID_Stand = standGUID;
                         Globals.GLOB_StandPosition = 100;
+                        //set stand icon On
+                        Stand.setIconNotFree();
+                        return false;
                     },
 
         null
 
         );
 
+        return false;
 
     }
 
-    //this.joinstandOK(data, standGUID)
-    //{
 
-    //}
 
 }
 
 var Stand = {
 
     //kedy bol naposledy ponuknuty Stand ? 
-    lastOffer : Date.now(),
+    lastOffer: Date.now(),
+
+
+    setIcon: function () {
+        if (Globals.GLOB_GUID_Stand) {
+            Stand.setIconNotFree();
+        }
+        else {
+            Stand.setIconNotFree();
+        }
+
+    },
+
+
+    setIconFree: function ()
+    {
+        $("#btnStand").removeClass("standMenuFree");
+        $("#btnStand").addClass("standMenuOn");
+
+    },
+
+    setIconNotFree: function ()
+    {
+        $("#btnStand").removeClass("standMenuFree");
+        $("#btnStand").addClass("standMenuOn");
+
+    },
+
 
     CheckStandAvailable: function()
     {
+
+        //ak sme na stanovisti, tak prec ! 
+        if (Globals.GLOB_GUID_Stand != "") return;
+
+
+        //od poslenej ponuky neubehlo este dost casu ? 
+        var differenceSec = (Date.now() - Stand.lastOffer) / 1000;
+        if (differenceSec < Globals.constants.Stand_OfferSec) return;
+
         console.log("CheckStandAvailable starts...");
+
         var Distanceminkm = 100000;
         var StandNear = "";
 
@@ -200,18 +264,20 @@ var Stand = {
             if (availbale) {
                 console.log("CheckStandAvailable show News!!");
                 Stand.lastOffer = Date.now();
-                var content = Translator.Translate("Vo vašej blízkosti sa nachádza stanovište")+" : "+StandNear + "<br/><button id=\"btnStand\"  data-route=\"stand\" class=\"textnoicon\">Stanovištia</button>";
+                var content = Translator.Translate("Vo vašej blízkosti sa nachádza stanovište")+" : "+StandNear + "<br/><button id=\"btnStand\"  data-route=\"stand\" style=\"background-color:black;\" class=\"textnoicon\">Stanovištia</button>";
                 //app.showNew();
-                app.showNewsComplete(Translator.Translate("Stanovište v blízkosti"), MediaInternal.getNewsSoundFile("StandAvailable"), "", 10000, content);
+                app.showNewsComplete(Translator.Translate("Stanovište"), MediaInternal.getNewsSoundFile("StandAvailable"), "", 10000, content);
             }
         }
             //je na stanovisku, odosiel ? 
         else {
             if (Distanceminkm > Globals.constants.Stand_Distancekm)
             {
-                console.log("Leave stand automat!!");
-                app.playSound(MediaInternal.getNewsSoundFile("StandLeave"));
-                Stand.LeaveStand();
+                //MHP - 19.3.2014 nemozeme to spravit, pretoze sa sem-tam strati GPS, vrati 0 a zrazu je sofer mimo stanovista 
+
+                //console.log("Leave stand automat!!");
+                //app.playSound(MediaInternal.getNewsSoundFile("StandLeave"));
+                //Stand.LeaveStand();
             }
         }
 
@@ -221,6 +287,7 @@ var Stand = {
     {
         Globals.GLOB_GUID_Stand = "";
         Globals.GLOB_StandPosition = 0;
+        Stand.setIconFree();
     },
 
     LeaveStand : function (callback)

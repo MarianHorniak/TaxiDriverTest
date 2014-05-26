@@ -29,23 +29,35 @@ var SettingsAllView = function (messages) {
 
         var self = this;
         var s = Service.getSettings();
-        var data = new Array;
+        var data = new Array();
+        
+        //Media
+        data[data.length] = { isHeader: "Y", Title: "Media" };
 
-        data[0] = { Group: "Main", Title: "RefreshSec", value: "7" };
-        data[1] = { Group: "Local", Title: "inRecall", value: Globals.GLOB_RecallMe.toString() };
-        data[2] = { Group: "Local", Title: "GUID_Transporter", value: s.transporterId };
-        data[3] = { Group: "Local", Title: "GUID_sysUser", value: s.userId };
-        data[4] = { Group: "Stand", Title: "GLOB_GUID_Stand", value: Globals.GLOB_GUID_Stand };
-        data[5] = { Group: "Stand", Title: "GLOB_StandPosition", value: Globals.GLOB_StandPosition };
+        data[data.length] = { Group: "Main", Title: "RefreshSec", value: "7" };
+        data[data.length] = { Group: "Local", Title: "inRecall", value: Globals.GLOB_RecallMe.toString() };
+        data[data.length] = { Group: "Local", Title: "GUID_Transporter", value: s.transporterId };
+        data[data.length] = { Group: "Local", Title: "GUID_sysUser", value: s.userId };
+        data[data.length] = { Group: "Stand", Title: "GLOB_GUID_Stand", value: Globals.GLOB_GUID_Stand };
+        data[data.length] = { Group: "Stand", Title: "GLOB_StandPosition", value: Globals.GLOB_StandPosition };
 
-        data[6] = { Group: "Position", Title: "Position_LatPrev", value: Globals.Position_LatPrev };
-        data[7] = { Group: "Position", Title: "Position_LngPrev", value: Globals.Position_LngPrev };
-        data[8] = { Group: "Position", Title: "Position_Lat", value: Globals.Position_Lat };
-        data[9] = { Group: "Position", Title: "Position_Lng", value: Globals.Position_Lng };
+        data[data.length] = { Group: "Position", Title: "Position_LatPrev", value: Globals.Position_LatPrev };
+        data[data.length] = { Group: "Position", Title: "Position_LngPrev", value: Globals.Position_LngPrev };
+        data[data.length] = { Group: "Position", Title: "Position_Lat", value: Globals.Position_Lat };
+        data[data.length] = { Group: "Position", Title: "Position_Lng", value: Globals.Position_Lng };
 
-        data[10] = { Group: "Locale", Title: "Language", value: Globals.language };
+        data[data.length] = { Group: "Locale", Title: "Language", value: Globals.language };
 
-        data[11] = { Group: "Log", Title: "Trace", value: Globals.traceMessage };
+        data[data.length] = { isHeader: "Y", Title: "Log" };
+        var logData = Diagnostic.getLog();
+        if (logData)
+        {
+            for (var i = 0, l = logData.length; i < l; i++) {
+                data[data.length] = { Group: "Log", Title: logData[i].Date, value: logData[i].Message };
+            }
+           }
+        
+        
 
 
         self.showForm(data);
@@ -57,10 +69,13 @@ var SettingsAllView = function (messages) {
 
         $("#settingsallForm").html(SettingsAllView.templateForm(data));
 
+
         if (self.iscroll)
             self.iscroll.refresh();
         else
             self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
+
+        
 
         $("#settingsallForm").show();
            // $("#settingsallSave").removeClass("transparent");

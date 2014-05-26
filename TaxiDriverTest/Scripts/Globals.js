@@ -30,6 +30,8 @@
         MessageType: "Info",
         ReceiverRole : "TaxiDispatcher",
 
+        //Media
+        Media_Volume:0.5, 
 
         //Me
         myGUID : "",

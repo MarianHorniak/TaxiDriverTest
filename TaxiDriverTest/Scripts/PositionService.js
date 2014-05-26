@@ -77,8 +77,6 @@ var PositionService = {
 
                 var posChanged = PositionService._lat != PositionService.lat && PositionService._lng != PositionService.lng;
 
-
-
                 
                 if (posChanged) {
                     PositionService._lat = PositionService.lat;
@@ -111,8 +109,6 @@ var PositionService = {
         
         if ((d.DataCheckSum && d.DataCheckSum != Service.ordersVer)) {
             Service.ordersVer = d.DataCheckSum;
-            console.log("app play new call");
-            app.log("app play new call");
             app.playNew();
             app.refreshData(["orders", "transporters"]);
         }
