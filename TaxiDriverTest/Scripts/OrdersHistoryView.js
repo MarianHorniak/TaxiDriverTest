@@ -23,10 +23,11 @@
     this.loadData = function () {
         $('.ordersHistory-list').hide();
         app.waiting();
+        var self = this;
         //select !          
         $("#selectHistory").val("2h");
         //default view 
-        this.view2h();
+        self.getViewCommon("view_orders_history2h");
     };
         
     this.selectionChange = function (e)
@@ -58,7 +59,7 @@
                 //self.viewMy24h();
                 break;
             case "My1Month":
-                self.getViewCommon("view_orders_history1monthme");
+                self.getViewCommonTab("view_orders_history1monthme");
                 //self.viewMymonth();   //view_orders_history1monthme
                 break;
             case "Reservations":
@@ -124,35 +125,18 @@
     }
 
 
-    //this.view_orders_historyTodaymeStat = function (e) {
-
-    //    self = this;
-    //    Service.getHistoryOrders("view_orders_historyTodaymeStat", function (data) {
-    //        self.renderTab(data);
-    //    });
-    //}
-
-    //this.view_orders_historyYestmeStat = function (e) {
-
-    //    self = this;
-    //    Service.getHistoryOrders("view_orders_historyYestmeStat", function (data) {
-    //        self.renderTab(data);
-    //    });
-    //}
-
-    //this.viewtest = function (e) {
-
-    //    var testdata = new Array;
-    //    testdata[0] = { freetext: "aaa1", GUID: "1" };
-    //    testdata[1] = { freetext: "aaa2", GUID: "2" };
-    //    $('.ordersHistory-list').html(OrdersHistoryView.liTemplateRaw(testdata));
-    //    $('.ordersHistory-list').show();
-    //}
 
     this.getViewCommon = function (viewName,e) {
         var self = this;
         Service.getHistoryOrders(viewName, function (orders) {
             self.renderOrders(orders);
+        });
+    }
+
+    this.getViewCommonTab = function (viewName, e) {
+        var self = this;
+        Service.getHistoryOrders(viewName, function (orders) {
+            self.renderTab(orders);
         });
     }
 
