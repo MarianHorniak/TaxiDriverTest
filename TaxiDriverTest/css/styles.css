@@ -27,6 +27,83 @@ body
 	font-size: 14px;
 }
 
+#taxiStatus {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    width: 200px;
+    height: 65px;
+    font-size: xx-large;
+    font-weight: bold;
+    vertical-align: middle;
+    text-align: center;
+}
+
+#taxiStatusInfo {
+    position:absolute;
+    top:0;
+    right:0px;
+    width: 50px;
+    height: 50px;
+}
+
+#taxiStatusInfo.Free {
+    background-color:green;
+}
+
+#taxiStatusInfo.NotFree {
+    background-color:red
+}
+#taxiStatusInfo.None {
+   display:none;
+}
+
+
+#taxiStatusOffers {
+    position:absolute;
+    top:0;
+    right:50px;
+    width: 50px;
+    height: 50px;
+}
+#taxiStatusOffers.New {
+    background-color:blue
+}
+#taxiStatusOffers.None {
+    background-color:transparent;
+    display:none;
+}
+
+#taxiStatusMessages {
+    position:absolute;
+    top:0;
+    right:100px;
+    width: 50px;
+    height: 50px;
+}
+#taxiStatusMessages.New {
+    background-color:blue
+}
+#taxiStatusMessages.None {
+    background-color:transparent;
+    display:none;
+}
+
+#taxiStatusPark {
+    position:absolute;
+    top:0;
+    right:150px;
+    width: 50px;
+    height: 50px;
+}
+#taxiStatusPark.New {
+    background-color:blue
+}
+#taxiStatusPark.None {
+    background-color:transparent;
+    display:none;
+}
+
 textarea {
     font-size: xx-large;
 }
@@ -307,6 +384,12 @@ button
 	background-color: #4286f5;
 	color: white;
 }
+/*toto je pre objednavku, ktora je broadcast - ako aukcia*/
+.buttonlist div.Offered.BroadCast 
+{
+	background-color: yellow;
+	color: #000000;
+}
 
 .buttonlist div.Waiting
 {
@@ -320,15 +403,18 @@ button
 	color: white;
 }
 
-.buttonlist div.StandFree
-{
-	background-color: green;
-	color: white;
-    height:67px;
+.buttonlist div.StandFree {
+    border-color: #FFFFFF;
+    background-color: green;
+    color: white;
+    height: 67px;
+    border-bottom-style: solid;
 }
 
 .buttonlist div.StandNotFree
 {
+    border-color: #FFFFFF;
+    border-bottom-style: solid;
 	background-color: #ff6a00;
 	color: white;
     height:67px;
@@ -515,16 +601,16 @@ h2
 #taxiNews {
     /*display:  none;*/
     position:absolute;
-    top: 100px;
-    bottom: 100px;
-    left: 100px;
-    right: 100px;
+    top: 50px;
+    bottom: 50px;
+    left: 50px;
+    right: 50px;
     z-index:10000;
     padding:10px;
     background-color: #f00;
 	color: #fff;
-    background-position:right;
-    background-repeat:no-repeat;
+    /*background-position:right;
+    background-repeat:no-repeat;*/
 }
 
 #taxiNewsTitle {
@@ -632,6 +718,15 @@ button.ico_stop
 	/* For IE 6 and 7 */
 }
 
+button.standMenuFree {
+    background-image: url('../img/parktest.png');
+}
+
+button.standMenuOn
+{
+	background-image: url('../img/parktest2.png');
+}
+
 button.ico_order
 {
     background-color:Green;
@@ -654,7 +749,8 @@ button.ico_messagenew
 
 button.ico_settings
 {
-	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARXSURBVHhe7ZpNaFRXFMcTI4kifiCt4EKYRRFMEcSFEmqLdKMgiKtCKRYXulBBXAjibsCVO9GFIC6EUkqhZBepIMy4dWELJehCDMVGg5EpmTD5mEwm/s57f8X5eDPjZCZ5eTk/uNx7555z3jl37n3v3vtej+M4juM4juM4juM4juM4juOsQ9Lp9IZSqXRqenp6l36qy9LSUqpcLg8je8J09PP6gQ7Ysbi4eJV8jLRE+Zqa6kJ72uQMOm6c7DoppebkYkES/C2CnrbgP0D9LdmAxGqgLejYT0GnzIg7J5FkUiwWDyneGgj+jMQqoOloKFHL/Pz81xJLLsSZCcOthAHzipSlOGaDh1QgjZPehRI1PJHJZEOgJ8N4l80FmVxRVvyJk81mHxDsa1XbhpG3ScXkYksCbvo3wwGyfLB1b3R0tF/mk4UFRoC/K9ZOMpLJZDbqMgH2MJiZmdmjavzhiXcWp/erGtDJkVUNtu/YNRYWFo4xVR+Syjb6ggvHnUKhsBt/SxYI+d9kF2zJYPUmZAjy/Nzc3N6JiYkt+Xz+Cxsp6P6EnT+sEyRXF5ptQfsR6oVmO4hYQNDX5HNLENhLRsb3Uo/ERiyy/0itJcwXqccX/KxZlUdBB2RtJEm1KTby0Hko9aYg+6b6/hYr8DFyVV4H69gdUm2ZycnJrXTEaGiiOUzp01KNH0yB+/KzKUzDb6T22aB+OLTSkP/x50asn5Z2w8fJq4yAZ3K6LjatpNI22BiRuQpsGuLDJRuJEl0bMIKGcD6nOCogoIsSaxvMRD15/5TI2gPn7dimhk6cMrD8+Ermqnkhka7Qq7wrmPcqVrOpt7d3XuW2wPQ2sqmwVkEe29tV7jircty73M4SUQeOnbAdSbc77D/lFXToyRVlI6+8K3S1w5g2dTusv7//iIptwwNlSMVqtrH2WlsvS2x1jdM/0mH/2n2sGlsSSLRtsNFwxU/7uK3DeMDsk0r8wM/gbRDOvgrdjmYFFq4f+EVq8cO2IXKyKXSqbW/a2hqh9zww0hpHpRo/bCrSEW/kaFOQ7ermG8akGl+Ykp99vEP2ndQjQeYA6S/TaRXzRerxxQ7t6ISCfA6gHvWq7FMeE+DlYrF4MJfLbac+QEqRTvL7r9hoeIAI50g/I/bIZKFke1u5FW8I8J5FgNNP7cTUpiq/3bbfusRdXTqAesquq2r8mZ2dTfEU/FbVAFsX0YHDYXydA5t2T9usyyQLvWa7YfMlDHd5YOvOuviah+nSykuRhtDnb1fjneSq/Dt9fX0qtQ8b+C8HBwePq5psGCBRH6S8I9kHKPYhir2qsw9TsqSonUNGJpMLQdpSIYq6q/JGU9g+oZJYMiH4H4hzLgy3gshVOW0DjLKK01sbgdz0f4v15rpTTE1N7STYKwT98cUs9bSa60J7sINAJ0c53m+DuglTyk4ebKHb8JtV20EwOs8iF/lpp+M4juM4juM4juM4juM4juMklp6e90qTOrgkd8eMAAAAAElFTkSuQmCC') /*/img/appbar.cog.png*/;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARXSURBVHhe7ZpNaFRXFMcTI4kifiCt4EKYRRFMEcSFEmqLdKMgiKtCKRYXulBBXAjibsCVO9GFIC6EUkqhZBepIMy4dWELJehCDMVGg5EpmTD5mEwm/s57f8X5eDPjZCZ5eTk/uNx7555z3jl37n3v3vtej+M4juM4juM4juM4juM4juOsQ9Lp9IZSqXRqenp6l36qy9LSUqpcLg8je8J09PP6gQ7Ysbi4eJV8jLRE+Zqa6kJ72uQMOm6c7DoppebkYkES/C2CnrbgP0D9LdmAxGqgLejYT0GnzIg7J5FkUiwWDyneGgj+jMQqoOloKFHL/Pz81xJLLsSZCcOthAHzipSlOGaDh1QgjZPehRI1PJHJZEOgJ8N4l80FmVxRVvyJk81mHxDsa1XbhpG3ScXkYksCbvo3wwGyfLB1b3R0tF/mk4UFRoC/K9ZOMpLJZDbqMgH2MJiZmdmjavzhiXcWp/erGtDJkVUNtu/YNRYWFo4xVR+Syjb6ggvHnUKhsBt/SxYI+d9kF2zJYPUmZAjy/Nzc3N6JiYkt+Xz+Cxsp6P6EnT+sEyRXF5ptQfsR6oVmO4hYQNDX5HNLENhLRsb3Uo/ERiyy/0itJcwXqccX/KxZlUdBB2RtJEm1KTby0Hko9aYg+6b6/hYr8DFyVV4H69gdUm2ZycnJrXTEaGiiOUzp01KNH0yB+/KzKUzDb6T22aB+OLTSkP/x50asn5Z2w8fJq4yAZ3K6LjatpNI22BiRuQpsGuLDJRuJEl0bMIKGcD6nOCogoIsSaxvMRD15/5TI2gPn7dimhk6cMrD8+Ermqnkhka7Qq7wrmPcqVrOpt7d3XuW2wPQ2sqmwVkEe29tV7jircty73M4SUQeOnbAdSbc77D/lFXToyRVlI6+8K3S1w5g2dTusv7//iIptwwNlSMVqtrH2WlsvS2x1jdM/0mH/2n2sGlsSSLRtsNFwxU/7uK3DeMDsk0r8wM/gbRDOvgrdjmYFFq4f+EVq8cO2IXKyKXSqbW/a2hqh9zww0hpHpRo/bCrSEW/kaFOQ7ermG8akGl+Ykp99vEP2ndQjQeYA6S/TaRXzRerxxQ7t6ISCfA6gHvWq7FMeE+DlYrF4MJfLbac+QEqRTvL7r9hoeIAI50g/I/bIZKFke1u5FW8I8J5FgNNP7cTUpiq/3bbfusRdXTqAesquq2r8mZ2dTfEU/FbVAFsX0YHDYXydA5t2T9usyyQLvWa7YfMlDHd5YOvOuviah+nSykuRhtDnb1fjneSq/Dt9fX0qtQ8b+C8HBwePq5psGCBRH6S8I9kHKPYhir2qsw9TsqSonUNGJpMLQdpSIYq6q/JGU9g+oZJYMiH4H4hzLgy3gshVOW0DjLKK01sbgdz0f4v15rpTTE1N7STYKwT98cUs9bSa60J7sINAJ0c53m+DuglTyk4ebKHb8JtV20EwOs8iF/lpp+M4juM4juM4juM4juM4juMklp6e90qTOrgkd8eMAAAAAElFTkSuQmCC')
+    /*background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAShSURBVHhe7ZtNaBNBFMebtDWIqFCqIigI6kGlIoKiiBq9+AUighTFoyKICB48+HEoqAh60UMvHgS9iIKihyqCWEVEURA/qBd7EQ9WGyJpaWj6kfp/2b/F7M4mm3S23ej7QZivN2/evJ2ZnZ3d1CmKoiiKoiiKoiiKoiiKovgRYxgZRkZGWmOx2CYmC8Tj8fPI+86k8jdjY2Pt+LlZweIpJ85QCYg6rEKm1GG5XG7Z6OjoBUy5Vcwqi9Rpa2v7vy40Fva9cNKbwurkkGRR2TUM8Tv5fL4bjj6O+HRmTxqTeqWGh4fXo7Ov6uvr7yK5xsmtHNwxF+POeRXRD9C5wcmdHCbNYRgNJ+Gol+jsOmbZYCl0voDuc0yHTugO6+rqmobpcxvRS3CW9X0fdZ6F025IW05ujSKLM6bgPXSmHBWtYU6WkY7Ozs4GitYeGFnX2JGSYB3ayCoTddgY2mynaCiENiVh+0EszIeZNAKZ17hjbmlsbHzBrCB8YWgEbR6F3pLtRg4YPA+/X/gZwTTNYyScMu2nUFz20QjpA1Ax5BR5QVmqv79/LsWjDwy+T9s9oGwAo2o3RT1AJNCzpGwnRBfLPeCCXKdotBkcHFxCmz2gg3k4awdFjUAskMME5O8UlY6IF7GFotawvoYlEokTjHpAH640NDQ8YnLCYEfxEDovM+mhlC2RAMYnSkyTrz09PTMo6gvkAo8wQfZeaLObckWILUHanDJgY9Ix1Qum4iGKlQSiFTlMEN2UMzG+x7OB1SmJK+pnXC6VSt1i3DqiG47JMllECZuqwuqjCox7hnVlM5PjoDPPsT8KZDhkN0FPC5MFUPcW9KaZNIJ6DxCY7r6PUXc749ECRhvXEnCRIqGBbUQb2yoCzn9HESvYvkvOYeimm2FoYBT+ZLQIjC4/m6rCtsNmMXTTxzBMcgzd+NlUFdb3YT5YNdoEpt5sRt34ObIqbDusl6GbhQxDA1NyAaNuouswrLGfGS0C+SsZDQ20sYhRN10MrWDVYVhgjcYhf2eYO27RLW0w6cZ4EavF9pR8xtBNorm5eT/j1oHuVgQJJ+XhFcPoIWdQWHyNpwfI7w7j+Fh0im42U4TYEvlzMdjZ4Zhr5BjFrIEN6xHqNtFBsegyNDS0lsZ6wBWXU9KiL3MmghwiQl+2oNwAHsp3UTTawDG+owxlaTh1NUWrJpfLtYguqjXxmqLRh53xPQlFmRxT76F4xWBkbYOOFNV5YNuBv9eIBDD4dMF6H9ApeRFyM5vNBt7UygKOOldQ1fcFCLnAKrUDX+I+ZQdKMQgn3Ea4r7e3dyarjyN3QYyorZCRg8VMoUYJ0ObLmn2Zm8lkmtCBd+xLWSA7gt83ROXLnjcSl7xCYQAg+0naZPO1SaVOqxZpY2BgYD6brW3k0QVTSo6RQwHO6ujr62tmc/8O6FsrOidTzhbydv3YP/1FYjqdno3RJsfJvp8SBEBuFO019TnARKHj5LHmCUad7yv/P0BGeI86Z6ZyrYrEHxtkG5BMJpfDGS2xWGx5PB4vnNDCQfLq7AfCjxhNb5uamjKSryiKoiiKoiiKoiiKoiiKEkHq6n4DFIfx2EHpt60AAAAASUVORK5CYII=')*/ /*/img/appbar.power.png*/;
 	*background-image: url(/img/appbar.cog.png);
 	/* For IE 6 and 7 */
 }

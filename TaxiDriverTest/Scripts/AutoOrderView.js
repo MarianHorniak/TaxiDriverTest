@@ -7,7 +7,8 @@ var AutoOrderView = function (store) {
     this.render = function () {
         this.el.html(AutoOrderView.template());
         var self = this;
-        $("#autoorderSave").click(function () { self.save(); });
+        $("#autoorderSave").off(app.clickEvent, function () { self.save(); });
+        $("#autoorderSave").on(app.clickEvent, function () { self.save(); });
         return this;
     };
 

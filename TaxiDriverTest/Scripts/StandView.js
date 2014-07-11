@@ -12,11 +12,14 @@
         //close modal New window
         app.hideNews();
 
-        $("#standBack").click(function () { app.home(); });
+
+        $("#standBack").off(app.clickEvent, function () { app.home(); });
+        $("#standBack").on(app.clickEvent,function () { app.home(); });
+
         //klik na header
-        $("#standHeader").click(function () {
-            self.getData();
-        });
+        $("#standHeader").off(app.clickEvent,function () { self.getData(); });
+        $("#standHeader").on(app.clickEvent,function () { self.getData(); });
+
         return this;
     };
 
@@ -53,14 +56,21 @@
 
 
         //klik na join stand
-        $(".forstandup").click(function (item) {
+        $(".forstandup").off(app.clickEvent,function (item) {
+            item.stopPropagation();
+            var data_id = item.currentTarget.getAttribute("data_id");
+            self.joinStand(data_id);
+        });
+
+        $(".forstandup").on(app.clickEvent,function (item) {
             item.stopPropagation();
             var data_id = item.currentTarget.getAttribute("data_id");
             self.joinStand(data_id);
         });
 
         //klik na down
-        $(".forstanddown").click(function () { Stand.LeaveStand(Stand.ToHomeScreen()); });
+        $(".forstanddown").off(app.clickEvent,function () { Stand.LeaveStand(Stand.ToHomeScreen()); });
+        $(".forstanddown").on(app.clickEvent,function () { Stand.LeaveStand(Stand.ToHomeScreen()); });
 
         app.waiting(false);
         $('.stand-list').show();
@@ -147,7 +157,7 @@
         });
 
         console.log("joinStand end");
-
+        app.setStatusBarNewPark();
         app.home();
     }
 
@@ -174,6 +184,7 @@
                         Globals.GLOB_GUID_Stand = standGUID;
                         Globals.GLOB_StandPosition = 100;
                         //set stand icon On
+                        app.setStatusBarNewPark();
                         Stand.setIconNotFree();
                         return false;
                     },
@@ -209,15 +220,15 @@ var Stand = {
 
     setIconFree: function ()
     {
-        $("#btnStand").removeClass("standMenuFree");
-        $("#btnStand").addClass("standMenuOn");
+        //$("#btnStand").removeClass("standMenuFree");
+        //$("#btnStand").addClass("standMenuOn");
 
     },
 
     setIconNotFree: function ()
     {
-        $("#btnStand").removeClass("standMenuFree");
-        $("#btnStand").addClass("standMenuOn");
+        //$("#btnStand").removeClass("standMenuFree");
+        //$("#btnStand").addClass("standMenuOn");
 
     },
 
@@ -288,6 +299,7 @@ var Stand = {
         Globals.GLOB_GUID_Stand = "";
         Globals.GLOB_StandPosition = 0;
         Stand.setIconFree();
+        app.setStatusBarNonePark();
     },
 
     LeaveStand : function (callback)

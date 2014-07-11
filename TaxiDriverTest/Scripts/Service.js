@@ -209,13 +209,13 @@
         if (!order.GUID)
             order.Status = "";
         switch (order.Status) {
-            case "New": order.StatusDescription = "Poslaná"; break;
-            case "Offered": order.StatusDescription = "Ponúknutá"; break;
-            case "Reserved": order.StatusDescription = "Rezervovaná"; break;
-            case "Waiting": order.StatusDescription = "Pristavené"; break;
-            case "Cancel": order.StatusDescription = "Zrušená"; break;
-            case "Processing": order.StatusDescription = "Transport"; break;
-            default: order.StatusDescription = "Vybavená"; break;
+            case "New": order.StatusTranslation = "Poslaná"; break;
+            case "Offered": order.StatusTranslation = "Ponúknutá"; break;
+            case "Reserved": order.StatusTranslation = "Rezervovaná"; break;
+            case "Waiting": order.StatusTranslation = "Pristavené"; break;
+            case "Cancel": order.StatusTranslation = "Zrušená"; break;
+            case "Processing": order.StatusTranslation = "Transport"; break;
+            default: order.StatusTranslation = "Vybavená"; break;
         }
         //order.FormatedDate = Service.formatDate(order.OrderToDate);
     },

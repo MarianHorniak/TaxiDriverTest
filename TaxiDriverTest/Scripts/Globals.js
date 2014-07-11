@@ -1,9 +1,6 @@
 ﻿var Globals = 
     {
 
-
-       
-
         //prezvonenie
         GLOB_RecallMe: false,
 
@@ -13,6 +10,13 @@
 
         //array of local lists
         GLOB_LocalLists: new Array("Stand", "sysMessageTemplate"),
+
+        //sounds
+        soundItems : {
+            "Order_Change":"sound_order.mp3",
+            "Order_Broadcast":"sound_orderbroadcast2.mp3",
+            "Message_New":"sound_message.mp3",
+        },
 
         //last position
         Position_Lat: 0,

@@ -8,8 +8,12 @@ var SettingsView = function (messages) {
     this.render = function () {
         var self = this;
         this.el.html(SettingsView.template());
-        $("#settingsSave").click(function () { if (!$(this).hasClass("transparent")) self.save(); });
-        $("#appExit").click(function () { app.end(function () { self.loadForm(); }); })
+        $("#settingsSave").off(app.clickEvent, function () { if (!$(this).hasClass("transparent")) self.save(); });
+        $("#settingsSave").on(app.clickEvent, function () { if (!$(this).hasClass("transparent")) self.save(); });
+
+        $("#appExit").off(app.clickEvent, function () { app.end(function () { self.loadForm(); }); })
+        $("#appExit").on(app.clickEvent, function () { app.end(function () { self.loadForm(); }); })
+
         return this;
     };
 

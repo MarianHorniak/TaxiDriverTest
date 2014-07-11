@@ -8,12 +8,8 @@ var MessageNewView = function (store) {
     this.render = function () {
         this.el.html(MessageNewView.template());
         var self = this;
-        //if (self.iscroll)
-        //    self.iscroll.refresh();
-        //else
-        //    self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
-
-        $("#messagenewSave").click(function () { self.save(); });
+        $("#messagenewSave").off(app.clickEvent,function () { self.save(); });
+        $("#messagenewSave").on(app.clickEvent,function () { self.save(); });
         return this;
     };
 

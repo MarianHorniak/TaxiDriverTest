@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>TAXI driver test DataStream</title>
+    <title>TAXI driver test</title>
     <meta charset="utf-8"/>
     <link href="css/styles.css" rel="stylesheet">
 </head>
@@ -21,8 +21,17 @@
 <!-- Orders -->
 <script id="orders-tpl" type="text/x-handlebars-template">
 <div id="taxiHeader">
+
     <div id="taxiText">TAXI</div>
     <div id="taxiInfo"></div>
+
+            <div id="taxiStatus">
+                <div class="None" id="taxiStatusInfo">I</div> 
+                <div class="None" id="taxiStatusOffers">O</div> 
+                <div class="None" id="taxiStatusMessages">S</div> 
+                <div class="None" id="taxiStatusPark">P</div> 
+            </div>
+
 </div>
 
 
@@ -33,9 +42,7 @@
     <button id="btnHistory"  data-route="history" class="textnoicon">História</button>
     <button id ="btnRecallMe" title="Recall me" class="icon ico_phone">&nbsp;</button>
     <button data-route="states" class="icon ico_stop">&nbsp;</button>
-    <!--<button id="btnStand"  data-route="stand" class="textnoicon">Stanovištia</button>-->
     <button id="btnStand"  data-route="stand" class="icon standMenuFree">&nbsp;</button>
-    <!--<button id="btnSetting"  data-route="allsettings" class="textnoicon">Nastavenia</button>-->
     <button id="btnSetting"  data-route="allsettings" class="icon ico_settings">&nbsp;</button>
 </div>
 
@@ -57,7 +64,7 @@
 
 <script id="orders-li-tpl" type="text/x-handlebars-template">
 {{#.}}
-<div id="{{this.GUID}}" class="{{this.Status}}" data_GUID_Offer="{{this.GUID_Offer}}" data_StatusOffer="{{this.StatusOffer}}" data_Id="{{this.GUID}}" data_Status="{{this.Status}}">
+<div id="{{this.GUID}}" class="{{this.Status}} {{this.StatusDescription}}" data_GUID_Offer="{{this.GUID_Offer}}" data_StatusOffer="{{this.StatusOffer}}" data_Id="{{this.GUID}}" data_Status="{{this.Status}}">
 
     {{#if this.StatusCancel}}
     {{else}}
@@ -66,7 +73,7 @@
 
     <div class="content">
     {{#if this.StatusOfferGUI}}
-             <strong>{{this.FormatedDate}} {{this.StatusDescription}}</strong> <br/>
+             <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong> <br/>
              {{this.StartCity}} {{this.StartAddress}}<br/>
              {{this.EndCity}} {{this.EndAddress}}<br/>
             {{this.Persons}} / {{this.SpecialConditions}}  
@@ -85,7 +92,7 @@
             {{#if Globals.Orders_List_ShowCustomerPhone}}
             / {{this.CustomerPhone}} 
             {{/if}}
-            / {{this.CustomerName}} - <strong>{{this.StatusDescription}}</strong>
+            / {{this.CustomerName}} - <strong>{{this.StatusTranslation}}</strong>
 
      {{/if}}
     </div>
@@ -154,7 +161,7 @@
 <script id="ordersHistory-li-tpl" type="text/x-handlebars-template">
 {{#.}}
 <div data_Id="{{this.GUID}}" data_Status="{{this.Status}}" class="{{this.Status}}">
-    <div class="content"><strong>[{{this.iOrder}}] {{this.FormatedDate}}</strong> {{this.StatusDescription}} odkiaľ: {{this.StartCity}} {{this.StartAddress}}, kam: {{this.EndCity}} {{this.EndAddress}}, zdroj: {{this.OrderSource}}, kto: {{this.DriverTitle}}</div>
+    <div class="content"><strong>[{{this.iOrder}}] {{this.FormatedDate}}</strong> {{this.StatusTranslation}} odkiaľ: {{this.StartCity}} {{this.StartAddress}}, kam: {{this.EndCity}} {{this.EndAddress}}, zdroj: {{this.OrderSource}}, kto: {{this.DriverTitle}}</div>
 </div>
 {{/.}}
 </script>
@@ -170,7 +177,7 @@
 <script id="ordersHistorytab-li-tpl" type="text/x-handlebars-template">
 {{#.}}
 <div class="{{this.Status}}">
-    <div class="content"><strong>{{this.StatusDescription}} : {{this.Pocet}} </strong></div>
+    <div class="content"><strong>{{this.StatusTranslation}} : {{this.Pocet}} </strong></div>
 </div>
 {{/.}}
         
@@ -220,7 +227,7 @@
 
 <script id="orderDetailForm-tpl" type="text/x-handlebars-template">
     <div>
-        <strong>{{this.FormatedDate}} {{this.StatusDescription}}</strong>
+        <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong>
     </div>
     <div>
         <strong>Odkiaľ:</strong> {{this.StartCity}} {{this.StartAddress}}

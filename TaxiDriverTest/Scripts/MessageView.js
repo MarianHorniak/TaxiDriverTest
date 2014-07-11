@@ -12,8 +12,11 @@ var MessageView = function () {
             self.iscroll.refresh();
         else
             self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
-        $("#messageHeader").click(function () { self.loadData(); });
-        $("#messDelete").click(function () { self.deleteAllMess(); });
+        $("#messageHeader").off(app.clickEvent, function () { self.loadData(); });
+        $("#messageHeader").on(app.clickEvent, function () { self.loadData(); });
+        $("#messDelete").off(app.clickEvent, function () { self.deleteAllMess(); });
+        $("#messDelete").on(app.clickEvent, function () { self.deleteAllMess(); });
+
         // $("#messNew").click(function () { self.sendNew(); });
         Globals.HasNewMessasges = false;
     };
@@ -30,6 +33,7 @@ var MessageView = function () {
         Service.deleteMessage(guid);
         //Service.messages
         app.waiting(false);
+        this.loadData();
     }
 
 
@@ -41,8 +45,12 @@ var MessageView = function () {
                 data = Service.messages.Items;
                 $("#messageList").html(MessageView.liTemplate(data));
 
+
+
                 //original
-                $(".cancel").click(function () { self.delete1Mess($(this).parent()); });
+                $(".cancel").off(app.clickEvent, function () { self.delete1Mess($(this).parent()); });
+                $(".cancel").on(app.clickEvent, function () { self.delete1Mess($(this).parent()); });
+
 
                 if (data)
                     $("#messNumber").text = " [" + data.length+"]";
@@ -64,6 +72,9 @@ var MessageView = function () {
         app.waiting();
         app.setHeader();
 
+        //vymazeme new messages
+        app.setStatusBarNoneMessage();
+
             $('#menu').show();
             Service.getMessages(function (messages) {
                 $.each(messages.Items, function () {
@@ -71,8 +82,8 @@ var MessageView = function () {
                     if (this.GUID_sysUser_Sender == s.userId)
                         this.FromMe = true;
                 });
-                if (messages)
-                    Service.messagesVer = messages.DataCheckSum;
+                //if (messages)
+                //    Service.messagesVer = messages.DataCheckSum;
                 Service.messages = messages;
                 app.waiting(false);
                 if (messages && messages.Items)

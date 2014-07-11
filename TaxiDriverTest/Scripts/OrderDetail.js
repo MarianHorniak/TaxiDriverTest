@@ -12,16 +12,38 @@
         var self = this;
         this.el.html(OrderDetail.template());
         DetailMap.initialize($("#orderDetailMap"));
-        $("#orderDetailSave").click(function () { self.save(); });
-        $("#orderDetailBack").click(function () { app.home(); });
-        $("#orderCall").click(function () {
+        $("#orderDetailSave").off(app.clickEvent, function () { self.save(); });
+        $("#orderDetailSave").on(app.clickEvent, function () { self.save(); });
+
+        $("#orderDetailBack").off(app.clickEvent, function () { app.home(); });
+        $("#orderDetailBack").on(app.clickEvent, function () { app.home(); });
+
+
+        $("#orderCall").off(app.clickEvent,function () {
             Service.recallOrder(function () {
                 self.setButtons();
             });
         });
-        $("#orderTimeTab").click(function (e) { self.showTime(); });
-        $("#orderDetailTab").click(function () { self.showDetail(); });
-        $("#orderMapTab").click(function (e) { self.showMap(); });
+
+        $("#orderCall").on(app.clickEvent, function () {
+            Service.recallOrder(function () {
+                self.setButtons();
+            });
+        });
+
+
+
+        $("#orderTimeTab").off(app.clickEvent, function (e) { self.showTime(); });
+        $("#orderTimeTab").on(app.clickEvent, function (e) { self.showTime(); });
+
+
+        $("#orderDetailTab").off(app.clickEvent, function () { self.showDetail(); });
+        $("#orderDetailTab").on(app.clickEvent, function () { self.showDetail(); });
+
+
+        $("#orderMapTab").off(app.clickEvent, function (e) { self.showMap(); });
+        $("#orderMapTab").on(app.clickEvent, function (e) { self.showMap(); });
+
         return this;
     };
 

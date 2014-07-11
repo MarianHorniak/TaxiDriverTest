@@ -9,7 +9,9 @@ var OrdersView = function () {
 
     this.render = function () {
         this.el.html(OrdersView.template());
-        $("#taxiHeader").click(function () { app.refreshData(["orders", "transporters"]); });
+        $("#taxiHeader").off(app.clickEvent, function () { app.refreshData(["orders", "transporters"]); });
+        $("#taxiHeader").on(app.clickEvent, function () { app.refreshData(["orders", "transporters"]); });
+
 
         //if (app.isDevice) {
         //    $(window).unload(function () {
@@ -73,10 +75,6 @@ var OrdersView = function () {
             $('#menu').show();
             Service.getOrders(function (orders) {
 
-                ////check sum pre monzinu orders
-                //c_OrdersCheckSum = '';
-                ////nstavime datum refreshu
-                //g_OrdersLastRefresh = new Date();
 
                 $.each(orders.Items, function () {
                     this.FormatedDate = Service.formatJsonDate(this.Date);
@@ -85,15 +83,10 @@ var OrdersView = function () {
                     if (this.Status == 'Offered')
                         this.StatusOfferGUI = true;
 
-                    //c_OrdersCheckSum += this.Status + this.Date;
+                   
                 });
 
-                ////vyhodnotit checksum 
-                //if (g_OrdersCheckSum != c_OrdersCheckSum) //zvukovy signal
-                //        app.playNew();
-                //g_OrdersCheckSum = c_OrdersCheckSum;
 
-                Service.ordersVer = orders.DataCheckSum;
 
                 $('.orders-list').html(OrdersView.liTemplate(orders.Items));
                 if (self.iscroll)
@@ -102,20 +95,26 @@ var OrdersView = function () {
                     self.iscroll = new iScroll($('.scroll', self.el)[0], { hScrollbar: false, vScrollbar: false });
                 app.waiting(false);
 
-                $(".up").click(function () { self.changeOffer($(this).parent(), "Up"); });
-                $(".cancel").click(function () { self.changeOffer($(this).parent(), "Down"); });
-                $(".confirmCancel").click(function () { self.changeOffer($(this).parent(), "Down"); });
-                $(".content").click(function () { self.detail($(this).parent()); });
-                //$(".orderTimeToFree").click(function () { $(this).focus(); }).change(function () { alert($(this).val()); });
-                //
+                $(".up").off(app.clickEvent, function () { self.changeOffer($(this).parent(), "Up"); });
+                $(".up").on(app.clickEvent, function () { self.changeOffer($(this).parent(), "Up"); });
+
+                $(".cancel").off(app.clickEvent, function () { self.changeOffer($(this).parent(), "Down"); });
+                $(".cancel").on(app.clickEvent, function () { self.changeOffer($(this).parent(), "Down"); });
+
+
+                $(".confirmCancel").off(app.clickEvent, function () { self.changeOffer($(this).parent(), "Down"); });
+                $(".confirmCancel").on(app.clickEvent, function () { self.changeOffer($(this).parent(), "Down"); });
+
+
+                $(".content").off(app.clickEvent, function () { self.detail($(this).parent()); });
+                $(".content").on(app.clickEvent, function () { self.detail($(this).parent()); });
+
                 $('.orders-list').show();
-                //$(".content").append('<div class="orderTimeToFree"><select class="orderTimeToFree" name="aa"><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">1 hod</option><option value="120">2 hod</option><option value="240">4 hod</option></select></div>');
             });
         }
     };
     this.detail = function (btn) {
         var self = this;
-        //Service.detail(btn.attr("data_localId"));
         Service.orders.Current = Service.findOrder(btn.attr("data_Id"));
         if (Service.orders.Current)
             app.route("detail");

@@ -105,13 +105,61 @@ var PositionService = {
         else
             PositionService.startPool();
     },
+
     refreshVersionData: function (d) {
         
-        if ((d.DataCheckSum && d.DataCheckSum != Service.ordersVer)) {
-            Service.ordersVer = d.DataCheckSum;
-            app.playNew();
-            app.refreshData(["orders", "transporters"]);
+        //mhp tu bude zmen, priuchadza viacerio checksumov ! 
+        var checkSum_Orders = '';
+        var checkSum_Messages = '';
+        var checkSum_Transporter = '';
+        var checkSum_User = '';
+        app.log("call resfresh version");
+
+
+        if (!d.Items)
+            return;
+
+        checkSum_Orders = d.Items[0]["Column1"];
+        checkSum_Messages = d.Items[1]["Column1"];
+        checkSum_Transporter = d.Items[2]["Column1"];
+
+        //app.setStatusBar('aa', 'bb', 'mess', 'P');
+        
+        app.setStatusBarOffer("None");
+
+        //chcek offers
+        if ((checkSum_Orders && checkSum_Orders != Service.ordersVer)) {
+            Service.ordersVer = checkSum_Orders;
+            app.setStatusBarOffer("New");
+            try
+            {
+                var isSpecial = Service.ordersVer.indexOf("BroadCast") > -1
+                //nova objednavka, alebo broadcast ? 
+                if (isSpecial) {
+                    MediaInternal.playSoundInMedia("Order_Broadcast");
+                }
+                else {
+                    app.playNew();
+                }
+            }
+            catch (err) { //zahrame, aj ak bola chyba !
+                app.playNew();
+            }
+
+            //MHP stacia orders a nepotrebujeme transporters ? 
+            //app.refreshData(["orders", "transporters"]);
+            app.refreshData(["orders"]);
         }
+
+        //messages 
+        if (checkSum_Messages && checkSum_Messages  != Service.messagesVer)
+        {
+            Service.messagesVer = checkSum_Messages;
+            app.setStatusBarNewMessage();
+            MediaInternal.playSoundInMedia("Message_New");
+        }
+
+
         //if (d.tVer && d.tVer != Service.transporterVer) {
         //    Service.transporterVer = d.tVer;
             

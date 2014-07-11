@@ -2,8 +2,8 @@
 <widget xmlns       = "http://www.w3.org/ns/widgets"
         xmlns:gap   = "http://phonegap.com/ns/1.0"
         id          = "sk.datastream.taxi"
-        versionCode = "432"
-        version     = "1.4.32">
+        versionCode = "434"
+        version     = "1.4.34">
  
     <name>TAXI Driver test</name>
   
@@ -19,10 +19,15 @@
   <icon src="img/phoneicon72.png"       gap:platform="ios" width="72"  height="72"  />
   <icon src="img/phoneicon120.png"       gap:platform="ios" width="120"  height="120"  />
   <icon src="img/phoneicon152.png"       gap:platform="ios" width="152"  height="152"  />
+  <icon src="img/phoneicon76.png"       gap:platform="ios" width="76"  height="76"  />
       
   <preference name="load-url-timeout" value="60000" />
   <preference name="phonegap-version" value="2.9.0" />
   <preference name="DisallowOverscroll" value="true" />
+  <preference name="exit-on-suspend" value="false" />
+  <preference name="KeepRunning " value="true" />
+  <preference name="Fullscreen" value="true" />
+  <preference name="loadingDialog" value="Driver, Starting" />
 
     <access origin="*" />
     

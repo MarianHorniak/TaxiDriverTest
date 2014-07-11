@@ -2,6 +2,7 @@
     currentPage: null,
     currentPageName: null,
     isDevice: false,
+    clickEvent: "click",
     mediaNew : null,
     mediaAlert : null,
     pages: {},
@@ -92,9 +93,17 @@
     playSound: function (soundFile) {
         window.setTimeout(function () {
             if (soundFile) {
-                var toplay = new Audio(soundFile);
-                toplay.volume = Globals.Media_Volume;
-                toplay.play();
+                var toplay;
+                if (app.isDevice)
+                    toplay = new Media(soundFile);
+                else
+                    toplay = new Audio(soundFile);
+
+                //toplay sound initialized ? 
+                if (toplay) {
+                    toplay.volume = Globals.Media_Volume;
+                    toplay.play();
+                }
             }
         }, 1);
     },
@@ -143,20 +152,32 @@
     },
     submenu: function()
     {
-        $('#divsubmenu').toggle(100);
+        var el = $('#divsubmenu');
+        el.toggle(100);
+        var elvis = $(el).is(":visible")
+        if (elvis)
+            window.setTimeout(function () {
+                app.submenuHide();
+            }, 5000);
     },
+
+    submenuHide: function () {
+        $('#divsubmenu').hide(100);
+    },
+
+
     registerEvents: function () {
         app.log("app.registerEvents");
         var self = this;
         $('body').on('touchmove', function (event) { event.preventDefault(); });
-        $('body').on('click', '[data-route]', function (event) { app.route($(this).attr("data-route")); });
-        //$('body').on('click', '#newOrder', function (event) { Service.autoOrder(); });
-        $('body').on('click', '#unbreakButton', function (event) { $("#unbreakButton").hide(); Service.unBreak(); });
-        $('body').on('click', '#unalarmButton', function (event) { $("#unalarmButton").hide(); Service.unAlarm(); });
-        $('body').on('click', '#taxiAlarm', function (event) { Service.alarm(); });
-        $('body').on('click', '#btnRecallMe', function (event) { Service.recallme(); });
-        $('body').on('click', '#btnSubmenu', function (event) { app.submenu(); });
-        $('body').on('click', '#btnNewsClose', function (event) { app.hideNews(); });
+        $('body').on(app.clickEvent, '[data-route]', function (event) { app.route($(this).attr("data-route")); });
+        //$('body').on('app.clickEvent, '#newOrder', function (event) { Service.autoOrder(); });
+        $('body').on(app.clickEvent, '#unbreakButton', function (event) { $("#unbreakButton").hide(); Service.unBreak(); });
+        $('body').on(app.clickEvent, '#unalarmButton', function (event) { $("#unalarmButton").hide(); Service.unAlarm(); });
+        $('body').on(app.clickEvent, '#taxiAlarm', function (event) { Service.alarm(); });
+        $('body').on(app.clickEvent, '#btnRecallMe', function (event) { Service.recallme(); });
+        $('body').on(app.clickEvent, '#btnSubmenu', function (event) { app.submenu(); });
+        $('body').on(app.clickEvent, '#btnNewsClose', function (event) { app.hideNews(); });
                         
         $('#unbreakButton').hide();
         $('#unalarmButton').hide();
@@ -300,6 +321,48 @@
             .empty()
             .html(settings.name + " " + Service.transporter.SPZ + " [" + Service.getTransporterStatusText()+"]");
     },
+
+    setStatusBar: function (info,offer, messages, park) {
+        //$("#taxiStatusInfo").html(status);
+        //$("#taxiStatusOffers").html(offer);
+        //$("#taxiStatusMessages").html(messages);
+        //$("#taxiStatusPark").html(park);
+        $("#taxiStatus").html(status+' '+offer+' '+messages+' '+park);
+    },
+    setStatusBarInfo: function (infoClass) {
+        $("#taxiStatusInfo").removeClass();
+        $("#taxiStatusInfo").addClass(infoClass);
+    },
+
+    setStatusBarOffer: function (offerClass) {
+        $("#taxiStatusOffers").removeClass();
+        $("#taxiStatusOffers").addClass(offerClass);
+    },
+
+    setStatusBarNewMessage: function () {
+        $("#taxiStatusMessages").removeClass("None");
+        $("#taxiStatusMessages").addClass("New");
+
+    },
+
+    setStatusBarNoneMessage: function () {
+        $("#taxiStatusMessages").removeClass("New");
+        $("#taxiStatusMessages").addClass("None");
+
+    },
+
+
+    setStatusBarNonePark: function (parkClass) {
+        $("#taxiStatusPark").removeClass("New");
+        $("#taxiStatusPark").addClass("None");
+    },
+
+    setStatusBarNewPark: function (parkClass) {
+        $("#taxiStatusPark").removeClass("None");
+        $("#taxiStatusPark").addClass("New");
+    },
+
+
     getPhoneGapPath: function () {
         if (app.isDevice) {
             var path = window.location.pathname;
@@ -319,16 +382,16 @@
             self.home();
         });
     },
-    radio: function (el, input)
-    {
+    radio: function (el, input) {
         var v = input.val();
         $.each(el.children('[data_value]'), function () {
             var $this = $(this);
-            if($this.attr('data_value') === v)
+            if ($this.attr('data_value') === v)
                 $this.addClass("selected");
             else
                 $this.removeClass("selected");
-            $this.click(function () {
+            $this.off(app.clickEvent);
+            $this.on(app.clickEvent, function () {
                 $this.siblings().removeClass("selected");
                 $this.addClass("selected");
                 input.val($this.attr("data_value"));
@@ -340,8 +403,10 @@
 function onLoad() {
     app.isDevice = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
     if (app.isDevice) {
+        app.clickEvent = "tap";
         document.addEventListener("deviceready", function () { app.initialize(); }, false);
     } else {
+        app.clickEvent = "click";
         app.initialize();
     }
     
@@ -353,5 +418,61 @@ function showMenu() {
 function hideMenu() {
     document.getElementById("submenu").style.display = "none";
 }
+
+$.event.special.tap = {
+    // Abort tap if touch moves further than 10 pixels in any direction
+    distanceThreshold: 10,
+    // Abort tap if touch lasts longer than half a second
+    timeThreshold: 500,
+    setup: function () {
+        var self = this,
+          $self = $(self);
+
+        // Bind touch start
+        $self.on('touchstart', function (startEvent) {
+            // Save the target element of the start event
+            var target = startEvent.target,
+              touchStart = startEvent.originalEvent.touches[0],
+              startX = touchStart.pageX,
+              startY = touchStart.pageY,
+              threshold = $.event.special.tap.distanceThreshold,
+              timeout;
+
+            function removeTapHandler() {
+                clearTimeout(timeout);
+                $self.off('touchmove', moveHandler).off('touchend', tapHandler);
+            };
+
+            function tapHandler(endEvent) {
+                removeTapHandler();
+
+                // When the touch end event fires, check if the target of the
+                // touch end is the same as the target of the start, and if
+                // so, fire a click.
+                if (target == endEvent.target) {
+                    $.event.simulate('tap', self, endEvent);
+                }
+            };
+
+            // Remove tap and move handlers if the touch moves too far
+            function moveHandler(moveEvent) {
+                var touchMove = moveEvent.originalEvent.touches[0],
+                  moveX = touchMove.pageX,
+                  moveY = touchMove.pageY;
+
+                if (Math.abs(moveX - startX) > threshold ||
+                    Math.abs(moveY - startY) > threshold) {
+                    removeTapHandler();
+                }
+            };
+
+            // Remove the tap and move handlers if the timeout expires
+            timeout = setTimeout(removeTapHandler, $.event.special.tap.timeThreshold);
+
+            // When a touch starts, bind a touch end and touch move handler
+            $self.on('touchmove', moveHandler).on('touchend', tapHandler);
+        });
+    }
+};
 
 

@@ -8,7 +8,10 @@
     this.render = function () {
         this.el.html(OrdersHistoryView.template());
         var self = this;
-        $("#historyBack").click(function () { app.home(); });
+        $("#historyBack").off(app.clickEvent, function () { app.home(); });
+        $("#historyBack").on(app.clickEvent, function () { app.home(); });
+
+        $("#selectHistory").off("change", function (e) { self.selectionChange(e); });
         $("#selectHistory").on("change", function (e) { self.selectionChange(e); });
         return this;
     };
@@ -39,32 +42,38 @@
         switch (sel)
         {
             case "1h":
-                self.view2h(); //view_orders_history1h
+                self.getViewCommon("view_orders_history1h");
+                //self.view1h(); //view_orders_history1h
                 break;
             case "2h":
-                self.view2h();
+                self.getViewCommon("view_orders_history2h");
+                //self.view2h();
                 break;
             case "24h":
-                self.view24h();
+                self.getViewCommon("view_orders_history24h");
+                //self.view24h();
                 break;
             case "My24h":
-                self.viewMy24h();
+                self.getViewCommon("view_orders_history24hme");
+                //self.viewMy24h();
                 break;
             case "My1Month":
-                self.viewMymonth();   //view_orders_history1monthme
+                self.getViewCommon("view_orders_history1monthme");
+                //self.viewMymonth();   //view_orders_history1monthme
                 break;
             case "Reservations":
-                self.viewReservations(); //view_orders_historyreservations
+                self.getViewCommon("view_orders_historyreservations");
+                //self.viewReservations(); //view_orders_historyreservations
                 break;
-            case "Test":
-                self.viewtest();
-                break;
-            case "MyTodayTab":
-                self.view_orders_historyTodaymeStat();
-                break;
-            case "MyYestTab":
-                self.view_orders_historyYestmeStat();
-                break;
+            //case "Test":
+            //    self.viewtest();
+            //    break;
+            //case "MyTodayTab":
+            //    self.view_orders_historyTodaymeStat();
+            //    break;
+            //case "MyYestTab":
+            //    self.view_orders_historyYestmeStat();
+            //    break;
         }
 
         app.waiting(false);
@@ -115,73 +124,80 @@
     }
 
 
-    this.view_orders_historyTodaymeStat = function (e) {
+    //this.view_orders_historyTodaymeStat = function (e) {
 
-        self = this;
-        Service.getHistoryOrders("view_orders_historyTodaymeStat", function (data) {
-            self.renderTab(data);
-        });
-    }
+    //    self = this;
+    //    Service.getHistoryOrders("view_orders_historyTodaymeStat", function (data) {
+    //        self.renderTab(data);
+    //    });
+    //}
 
-    this.view_orders_historyYestmeStat = function (e) {
+    //this.view_orders_historyYestmeStat = function (e) {
 
-        self = this;
-        Service.getHistoryOrders("view_orders_historyYestmeStat", function (data) {
-            self.renderTab(data);
-        });
-    }
+    //    self = this;
+    //    Service.getHistoryOrders("view_orders_historyYestmeStat", function (data) {
+    //        self.renderTab(data);
+    //    });
+    //}
 
-    this.viewtest = function (e) {
+    //this.viewtest = function (e) {
 
-        var testdata = new Array;
-        testdata[0] = { freetext: "aaa1", GUID: "1" };
-        testdata[1] = { freetext: "aaa2", GUID: "2" };
-        $('.ordersHistory-list').html(OrdersHistoryView.liTemplateRaw(testdata));
-        $('.ordersHistory-list').show();
-    }
+    //    var testdata = new Array;
+    //    testdata[0] = { freetext: "aaa1", GUID: "1" };
+    //    testdata[1] = { freetext: "aaa2", GUID: "2" };
+    //    $('.ordersHistory-list').html(OrdersHistoryView.liTemplateRaw(testdata));
+    //    $('.ordersHistory-list').show();
+    //}
 
-    this.view1h = function (e) {
+    this.getViewCommon = function (viewName,e) {
         var self = this;
-        Service.getHistoryOrders("view_orders_history1h", function (orders) {
+        Service.getHistoryOrders(viewName, function (orders) {
             self.renderOrders(orders);
         });
     }
 
-    this.view2h = function (e)
-    {
-        var self = this;
-        Service.getHistoryOrders("view_orders_history2h", function (orders) {
-            self.renderOrders(orders);
-        });
-    }
+    //this.view1h = function (e) {
+    //    var self = this;
+    //    Service.getHistoryOrders("view_orders_history1h", function (orders) {
+    //        self.renderOrders(orders);
+    //    });
+    //}
 
-    this.viewMy24h = function (e) {
-        self = this;
-        Service.getHistoryOrders("view_orders_history24hme", function (orders) {
-            self.renderOrders(orders);
-        });
-    }
+    //this.view2h = function (e)
+    //{
+    //    var self = this;
+    //    Service.getHistoryOrders("view_orders_history2h", function (orders) {
+    //        self.renderOrders(orders);
+    //    });
+    //}
 
-    this.viewMymonth = function (e) {
-        self = this;
-        Service.getHistoryOrders("view_orders_history1monthme", function (orders) {
-            self.renderOrders(orders);
-        });
-    }
+    //this.viewMy24h = function (e) {
+    //    self = this;
+    //    Service.getHistoryOrders("view_orders_history24hme", function (orders) {
+    //        self.renderOrders(orders);
+    //    });
+    //}
 
-    this.viewReservations = function (e) {
-        self = this;
-        Service.getHistoryOrders("view_orders_historyreservations", function (orders) {
-            self.renderOrders(orders);
-        });
-    }
+    //this.viewMymonth = function (e) {
+    //    self = this;
+    //    Service.getHistoryOrders("view_orders_history1monthme", function (orders) {
+    //        self.renderOrders(orders);
+    //    });
+    //}
+
+    //this.viewReservations = function (e) {
+    //    self = this;
+    //    Service.getHistoryOrders("view_orders_historyreservations", function (orders) {
+    //        self.renderOrders(orders);
+    //    });
+    //}
     
-    this.view24h = function (e) {
-        self = this;
-        Service.getHistoryOrders("view_orders_history24h", function (orders) {
-            self.renderOrders(orders);
-        });
-    }
+    //this.view24h = function (e) {
+    //    self = this;
+    //    Service.getHistoryOrders("view_orders_history24h", function (orders) {
+    //        self.renderOrders(orders);
+    //    });
+    //}
 
 
     this.initialize();
