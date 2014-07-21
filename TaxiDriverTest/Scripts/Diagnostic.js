@@ -31,7 +31,5 @@ var Diagnostic = {
     //get log array
     getLog: function () {
         return Diagnostic.a_TraceLog;
-    },
-
-
+    }
 }

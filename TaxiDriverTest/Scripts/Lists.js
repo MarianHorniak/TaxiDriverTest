@@ -33,7 +33,7 @@ var Lists = {
                 Lists.cache[listName] = data;
                 console.log("startup loading list: " + listName+", items: "+data.Items.length);
             });
-    },
+    }
 
     //storeList: function (listName, data) {
     //    window.localStorage.setItem(listName, JSON.stringify(data));

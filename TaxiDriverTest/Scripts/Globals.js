@@ -15,7 +15,7 @@
         soundItems : {
             "Order_Change":"sound_order.mp3",
             "Order_Broadcast":"sound_orderbroadcast2.mp3",
-            "Message_New":"sound_message.mp3",
+            "Message_New":"sound_message.mp3"
         },
 
         //last position
@@ -51,8 +51,8 @@
             OrderDetail_Defauls_timeToRealize: 5,
             g_RefreshOrderSeconds: 60,
             Stand_Distancekm: 0.200,
-            Stand_OfferSec:180, //180
-        },
+            Stand_OfferSec:180 //180
+        }
     }
 
 

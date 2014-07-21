@@ -32,6 +32,7 @@ var Map = {
     messError: null,
     geocoder: null,
     apiIsOk: false,
+    bounds: null,
     initialize: function (el) {
         var header = $('<div class="header"><button data-route="orders" class="icon ico_back">&nbsp;</button></div>').appendTo(el);
         var sc = $('<div class="scrollBottom"/>').appendTo(header);
@@ -55,8 +56,9 @@ var Map = {
             Map.markers[i].setMap(null);
         }
         Map.markers = [];
+        Map.bounds = new google.maps.LatLngBounds();
         console.log("get map view data");
-        var self = this;
+        var self = Map;
         var s = Service.getSettings();
         Service.callService("datamobile", { Id: "viewWebClientTransporters" },
             function (result) {
@@ -65,23 +67,48 @@ var Map = {
                 console.log("get map view data " + result.Items.length);
                 $.each(self.datatransporters.Items, function () {
                     var item = this;
-                    var m = new  google.maps.Marker({
-                        //icon: { url: "img/cabs.png" },
-                        //labelContent: 'A',
-                        position: new google.maps.LatLng(item.Latitude, item.Longitude),
-                        title:item.Title,
-                        clickable: false,
-                        map: Map.map
+                    //var m = new  google.maps.Marker({
+                    //    //icon: { url: "img/cabs.png" },
+                    //    //labelContent: 'A',
+                    //    position: new google.maps.LatLng(item.Latitude, item.Longitude),
+                    //    title:item.Title,
+                    //    clickable: false,
+                    //    map: Map.map
+                    //});
+                    var pos = new google.maps.LatLng(item.Latitude, item.Longitude);
+                    var m = new InfoBubble({
+                        map: Map.map,
+                        content: '<div style="height:25px;padding:5px;color:#333;">' + item.SPZ + '</div>',
+                        position: pos,
+                        shadowStyle: 1,
+                        padding: 0,
+                        //backgroundColor: 'rgb(57,57,57)',
+                        borderRadius: 4,
+                        arrowSize: 10,
+                        borderWidth: 1,
+                        borderColor: '#333',
+                        disableAutoPan: true,
+                        hideCloseButton: true,
+                        arrowPosition: 50,
+                        //backgroundClassName: 'phoney',
+                        arrowStyle: 2
                     });
-
                     //m.setTitle(item.Title);
                     //m.setIcon(app.getIconUrl(item, true));
 
+                    self.bounds.extend(pos);
+
                     Map.markers.push(m);
+                    m.open();
                 });
+                self.setBounds();
             }
          );
 
+    },
+    setBounds :  function() {
+        if (Map.map && Map.bounds && !Map.bounds.isEmpty())
+            Map.map.fitBounds(Map.bounds);
     },
     apiOK: function () {
         Map.apiIsOk = true;
@@ -226,5 +253,5 @@ var Map = {
             }
         );
         return address;
-    },
+    }
 };

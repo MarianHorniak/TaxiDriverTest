@@ -23,6 +23,7 @@
 /// <reference path="Geo.js" />
 /// <reference path="MediaInternal.js" />
 /// <reference path="Diagnostic.js" />
+/// <reference path="infobubble.js" />
 
 
 
