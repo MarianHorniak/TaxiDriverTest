@@ -78,12 +78,16 @@ var OrdersView = function () {
 
                 $.each(orders.Items, function () {
                     this.FormatedDate = Service.formatJsonDate(this.Date);
-                    if (this.Status == 'Cancel')
+                    this.ShowCancelbtn = true;
+                    if (this.Status == 'Cancel') {
                         this.StatusCancel = true;
+                        this.ShowCancelbtn = false;
+                    }
                     if (this.Status == 'Offered')
                         this.StatusOfferGUI = true;
 
-                   
+                    if(this.Status=="Processing")
+                        this.ShowCancelbtn = false;
                 });
 
 
@@ -95,15 +99,15 @@ var OrdersView = function () {
                     self.iscroll = new iScroll($('.scroll', self.el)[0], { hScrollbar: false, vScrollbar: false });
                 app.waiting(false);
 
-                $(".up").off(app.clickEvent, function () { self.changeOffer($(this).parent(), "Up"); });
-                $(".up").on(app.clickEvent, function () { self.changeOffer($(this).parent(), "Up"); });
+                $(".up").off(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Up"); });
+                $(".up").on(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Up"); });
 
-                $(".cancel").off(app.clickEvent, function () { self.changeOffer($(this).parent(), "Down"); });
-                $(".cancel").on(app.clickEvent, function () { self.changeOffer($(this).parent(), "Down"); });
+                $(".cancel").off(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Down"); });
+                $(".cancel").on(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Down"); });
 
 
-                $(".confirmCancel").off(app.clickEvent, function () { self.changeOffer($(this).parent(), "Down"); });
-                $(".confirmCancel").on(app.clickEvent, function () { self.changeOffer($(this).parent(), "Down"); });
+                $(".confirmCancel").off(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Down"); });
+                $(".confirmCancel").on(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Down"); });
 
 
                 $(".content").off(app.clickEvent, function () { self.detail($(this).parent()); });
@@ -119,12 +123,75 @@ var OrdersView = function () {
         if (Service.orders.Current)
             app.route("detail");
     };
-    this.changeOffer = function (btn, action) {
+
+
+    ///musi nastavit platbu 
+    this.MustSetPayment = function (currentOrder)
+    {
+        if (!currentOrder) return;
+        var scriptText = "onclick = \"OrdersActions.setPaymentDialog('"+currentOrder.GUID+"')\"";
+        //aka je vyska platby ? nastavime hodnotu
+        var pToinput = 0;
+        if (pToinput == 0)
+        {
+            var sp = Globals.GetSetItem("DefaultPaymentValue");
+            if (sp && sp != "")
+                pToinput = sp;
+        }
+        var content1 = "<input type=\"text\" placeholder=\"Payment\" name=\"PaymentTotal\" id=\"orderNewsDetailFormPaymentTotal\" value=\""+pToinput+"\"/><br/>";
+        var content = Translator.Translate("Cena celkovo:") + content1 + "<br/><button id=\"btnsetPayment\" " + scriptText + "  style=\"background-color:black;\" class=\"textnoicon\">" + Translator.Translate("Zadať") + "</button>";
+        app.showNewsComplete(Translator.Translate("Platba"), null, "", 100000, content);
+        return;
+    }
+
+
+    this.beforechangeOffer = function (btn, action, currentOrder) {
+
+        var iOK = true;
+
+        //switch podla typov
+        if (currentOrder && currentOrder.Status == "Processing") {
+            //platba
+            var mustset = Globals.GetSetItem("RequirePaymentScreen");
+            if (mustset == 1 && !currentOrder.PaymentTotal || currentOrder.PaymentTotal == 0) {
+
+                this.MustSetPayment(currentOrder);
+                if (!currentOrder.PaymentTotal) iOK = false;
+                if (currentOrder.PaymentTotal > 0) iOK = false;
+            }
+        }
+
+        return iOK;
+    }
+
+    this.afterchangeOffer = function (btn, action, currentOrder) {
+
+        var iOK = true;
+        return iOK;
+    }
+
+    this.changeOfferComplex = function (btn, action) {
+
+        var canContinue = true;
+        var currentOrder = Service.orders.Current = Service.findOrder(btn.attr("data_Id"));
+
+        //preprocess
+        canContinue = this.beforechangeOffer(btn, action, currentOrder);
+
+        //process
+        //if (canContinue)
+        //    canContinue = this.changeOffer(btn, action, currentOrder);
+        this.changeOffer(btn, action, currentOrder);
+
+        //posprocess
+        if (canContinue)
+            canContinue = this.afterchangeOffer(btn, action, currentOrder);
+    }
+
+    this.changeOffer = function (btn, action, currentOrder) {
 
         btn.removeClass().addClass("refWaiting");
 
-        var currentOrder = Service.orders.Current = Service.findOrder(btn.attr("data_Id"));
-        
 
         var settings = Service.getSettings(), self = this;
         var data = {
@@ -163,6 +230,36 @@ var OrdersView = function () {
         Service.callService("transporteroffer", data);
     };
     this.initialize();
+}
+
+var OrdersActions = {
+
+    setPaymentDialog: function (GUID_TransporterOrder) {
+
+        var currentOrder = Service.orders.Current = Service.findOrder(GUID_TransporterOrder);
+
+        var orderDetailFormPaymentTotal = $("#orderNewsDetailFormPaymentTotal").val();
+        //kontrola
+        if (isNaN(orderDetailFormPaymentTotal)) {
+            app.showAlert("Nesprávna cena", "Chyba");
+            return;
+        }
+
+        app.hideNews();
+        var data = {
+            HistoryAction: "Payment",
+            HistoryActionDescription: "Total",
+            GUID_TransporterOrder: GUID_TransporterOrder,
+            Payment: orderDetailFormPaymentTotal
+        };
+
+        Service.callService("TaxiSetPayment", data);
+        if(currentOrder)
+            currentOrder.PaymentTotal = orderDetailFormPaymentTotal;
+
+    }
+
+
 }
 
 OrdersView.template = Handlebars.compile($("#orders-tpl").html());

@@ -11,7 +11,7 @@ var MessageView = function () {
         if (self.iscroll)
             self.iscroll.refresh();
         else
-            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
+            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: true, vScrollbar: true });
         $("#messageHeader").off(app.clickEvent, function () { self.loadData(); });
         $("#messageHeader").on(app.clickEvent, function () { self.loadData(); });
         $("#messDelete").off(app.clickEvent, function () { self.deleteAllMess(); });

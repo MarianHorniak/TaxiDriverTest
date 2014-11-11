@@ -481,6 +481,16 @@ h2
 	font-size: 18px;
 }
 
+.scrollcommon {
+    -webkit-overflow-scrolling: touch;
+}
+
+.scrollhoriz {
+    -webkit-overflow-scrolling: touch;
+    overflow:auto;
+}
+
+
 .scroll
 {
 	-webkit-overflow-scrolling: touch;
@@ -508,9 +518,10 @@ h2
 
 }
 
-.scrollBottom.Mess
+.scrollcommon.Mess
 {
-	bottom: 100px;
+	/*bottom: 100px;*/
+    bottom:5px;
     width:100%;
 }
 .messageNew {
@@ -722,6 +733,20 @@ button.standMenuFree {
     background-image: url('../img/parktest.png');
 }
 
+button.ico_lists {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAEOSURBVHhe7dbRioMwEAVQ3f//Z7sFhXZB18kkasg5L4rQqjeZcSYAAAAAGMi8HptZlmU9+zbPzW/dxM965CSBBVWpi72yu8LVpZ2+251hlcqEPGRJZhZZDwtKB9breFCq6tv20s8yi1yj6f+X0t49bk33N7Sid9fDggQWJLAggQXVaPrrWR+yY9BwOyy7wOnADK5B5jAOCSxIYEECC6r6iXvyTFbraz5MYBuDa1B2UdM7zBzGIYEFCSxIYEGPHSv+9uSW/x3x2MBaMYddLL3DzGEcEliQwIIEFjTcWLEpHS/ssCCBBd1akltZfP7us1RalXhpOb41D+z9cHvXe1T9qc/sll7DAgAAAICxTNMLwrtTRdZX2KAAAAAASUVORK5CYII=') /*/img/appbar.lists.png*/;
+    *background-image: url(/img/appbar.lists.png); /* For IE 6 and 7 */
+}
+
+button.ico_autoordertodisp {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAN2SURBVHhe7ZpNaBNBFMebbIhNFKFgQ0WqVUFBwaMBQRA8iNWLSE/2LPhxUrz3WBQqCB48CAVvxVMPeikUD168iIccFK1gDyb9UElpNmk3rf9p/pV+ZJMWpzOzyfvB8N5kJ+zsP2/efGw6BEEQBEEQBEEQBEEQhEasrq72VavVBwsLCxl+JDQCgl1BUZQh3KgI1wQINVDTq8bKysoMTJaXrROndYlu2jVisVg3BHuLcpofWcVFwXpp/wHRuiDYCKtWcVGwk7SbgGj9EK2PVWu4KNgl2m0gn12jaw2nBFteXr4IsymHbSQej4deM4VTgkGQy3TDmKG1hlOCIU8N0A1jlra9yeVySQzH9QVrXZC/AlnEEujxCoJ8qUlTH1wfZ/P2Blpcr0nSlNDZs61A5HylIKGgTY7NrWM16QdBcAuJvu5CdSPQ7CXd9iWfz+9H5EzVYigctPml2vJr7Ys686ImDUG7F/yKE1gZkipiMBQfstoQLGY/0W1fEDWPGEA7YWxoaCj0h1XXSqXSEd/3j5kYujFaY6iHymQy3xFhO94XQrR3aD+BfDaPiDsAewJ1dXKhzsiOwvfYrgR/FOINp9PpafVZ5MFD3VVhs5dA0EW1c+Atow0eJsfn2lNwn5+Tk5MJ3jaaNNsv6ga5bdvp7f9idJb0PO8eXRNUUqmU9uMgY4LxpKG/VjPCOCaACn1tGBMMs9bg+mxmAuSwD3S1onVZsbS0dD6RSDyF+wfizKHTv5XP+n2UpvtGXSCFzeJ+vSjao0wb6OTgWrZ1B+1HQlqHJCLKtRPRM7Ta0CqYC291tqD9HYDupH+Q1joYjvOFQuENq9owNkuaBoIN9/T0LLKqjZYVDLPjDbpaaWXBLvi+f5xVbbSsYIrOzs4uutrQLZhLi8QKkv5n+trQLViR1jpI+h+jkPRdOuX0abWiW7BvtLb5gX3tbfruok44MRTUn3htMlYsFg+xS+5TrVafsONGwT52GuYmuxEd1FshdHwEJa8exAQQaxEmxS5EF3XKWqlUzpbL5VPKx0PtU8MF9hwi8RlsCUUHE7xla6NeUijhECFzfPDdUkZ5jBL96NoN6h+IQRBchXjPId57CFA38nBNof4e9Rpt79hI7sbffO8ENdtms9nDnudtOi5KJpNT2CPuyfpKEARBEARBEARBEARBEIStdHT8BfeBKHI+IOPeAAAAAElFTkSuQmCC') /*/img/appbar.thumbs.up.png*/;
+    *background-image: url(/img/appbar.thumbs.up.png); 
+}
+
+button.ico_autoorderreserved {
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAOrSURBVHhe7ZpPaBNBFMabzTaJTUxFbKh68aIg9eqhJ72INw+CBw+eFERFUU96sqAHiyKeelFQoQcpgnow4sWUVvEgelAjFBTFVhq7IpKQtc1fv8m+yKZpAuvOTprt+8Fj3puZbLJfZmbfzm4PwzAMwzAMwzAMwzAM45ZqtboPdiadToeoimlFuVwehVh1rlM1sxIQaFulUilZWlWr8N9SkzI0KrsCCHQ8EAgEKWTakUqldAg2T4OrToqameVg7TpBItl5TM2MnWw2uwmja4FEsnODujB2IMw9S59GSqXSQerC1MFUvEj6NEAjLkzdGAFG0BEIU7EkagRtx6gbMzIyokGTy5Y0zUDDZ9SVgR7bIchLS5pm0JY3TXMrdV+70Kg6BzNryrRArGn0kbVLPp/fjJEzTZq0BH3eiwSWPtYRAlR2jGKxOBwMBh/glmcLVbXjG3R7A5uHP6dp2iwW/zkI+WNpacmIx+M/rW7e0VHBINZeiPUEYvVRlSsgZBnHmoVrQMQvKGdQ90rX9ae1Dt3M4uLiDrGA44Q8Bd8h0pJh+lrXKN+tyGQyUUyfnaFQaFzWyGoHvkPMogNW5B6pguHPTK9kWGcOi3Zc4W4mEokcxPqI89hd+5AC8BtMclcX1iRYkZPUPmGFasGIHqr9QAl01Qbi/wC9kuFwOE2ha1QLpvxmGVP/GrlSUC1YnEpVzECwSfKl4Pcp+Y5KafhdsM9USkO1YAkqVSH9MZxvRxiujmXTNF9QKI1OCDZWKBR2tTIkmfepnysg2Hg0GhU36VJRLZi4ShoiL9I0bQNsoG7I/vuo/pfV1RVfcZyz5EtFtWD/8jBd1x/CUnVD1V2rxT24FTuKdOI3hVLx4xr2ure39zn50vGdYFgDk+R6gmrBBqj0BHFlLBaL4xR6gq9GGAS7FIlEPlHoCb4RDGJNT01NjVLoGVL39PGjxZbwHSSMF6iqRiwWy+Gq9SeXyyXyYHBwUGxNL6DJPkXFpuKQYRjrMUrWUV0TONYtFA07qDjWBxx7T39/v4yUpC3SBUMxhhM/BXc//Ha7E7dh9vY52HnLbQapgoGr3ySOO4HwkKiDn4Ul8R+cVvHEyFNwImmYTFbFy3N+zMM8hQVzCAvmEM+efItHa1j8N1LYBNquwmIUijUvA7tCYRNo+457zkcUrj0gwPJ3VqU92fESnpIOYcEcwoI5hAVzCAvmEBbMIR17AxFphNhxsL9rkUVexq+TMwzDMAzDMAzDMD6jp+cvj7TbJv6xHrgAAAAASUVORK5CYII=') /*/img/appbar.thumb.up.add.png*/;
+}
+
 button.standMenuOn
 {
 	background-image: url('../img/parktest2.png');
@@ -734,6 +759,8 @@ button.ico_order
 	*background-image: url(/img/appbar.thumb.up.add.png);
 	/* For IE 6 and 7 */
 }
+
+
 
 button.ico_message
 {
@@ -802,6 +829,26 @@ div.tabs {
     width: 100%;
     overflow:hidden;
 }
+
+div.even {
+    background-color:#666;
+}
+
+div.odd {
+    background-color:#333;
+}
+
+div.FullContent {
+    padding:10px;
+     background-color:#333;
+}
+
+div.GroupHeader {
+    background-color: Gray;
+    font-weight: bold;
+    font-size: x-large;
+}
+
 
 div.tabs > div {
     padding: 15px;

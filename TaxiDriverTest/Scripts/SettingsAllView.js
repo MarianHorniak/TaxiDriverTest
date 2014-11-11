@@ -31,19 +31,29 @@ var SettingsAllView = function (messages) {
         
         //Media
         data[data.length] = { isHeader: "Y", Title: "Media" };
+        data[data.length] = { Group: "Media", Title: "Volume", value: Globals.Media_Volume };
+        data[data.length] = { Group: "Media", Title: "Speak", value: false };
 
+        data[data.length] = { isHeader: "Y", Title: "Main" };
         data[data.length] = { Group: "Main", Title: "RefreshSec", value: "7" };
+
+        data[data.length] = { isHeader: "Y", Title: "Local" };
         data[data.length] = { Group: "Local", Title: "inRecall", value: Globals.GLOB_RecallMe.toString() };
         data[data.length] = { Group: "Local", Title: "GUID_Transporter", value: s.transporterId };
         data[data.length] = { Group: "Local", Title: "GUID_sysUser", value: s.userId };
+
+        data[data.length] = { isHeader: "Y", Title: "Stand" };
         data[data.length] = { Group: "Stand", Title: "GLOB_GUID_Stand", value: Globals.GLOB_GUID_Stand };
         data[data.length] = { Group: "Stand", Title: "GLOB_StandPosition", value: Globals.GLOB_StandPosition };
 
+        data[data.length] = { isHeader: "Y", Title: "Position" };
         data[data.length] = { Group: "Position", Title: "Position_LatPrev", value: Globals.Position_LatPrev };
         data[data.length] = { Group: "Position", Title: "Position_LngPrev", value: Globals.Position_LngPrev };
         data[data.length] = { Group: "Position", Title: "Position_Lat", value: Globals.Position_Lat };
         data[data.length] = { Group: "Position", Title: "Position_Lng", value: Globals.Position_Lng };
+        data[data.length] = { Group: "Position", Title: "Current Address", value: "" };
 
+        data[data.length] = { isHeader: "Y", Title: "Locale" };
         data[data.length] = { Group: "Locale", Title: "Language", value: Globals.language };
 
         data[data.length] = { isHeader: "Y", Title: "Log" };
@@ -70,8 +80,10 @@ var SettingsAllView = function (messages) {
 
         if (self.iscroll)
             self.iscroll.refresh();
-        else
-            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
+        else {
+            //self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
+            self.iscroll = new iScroll($('.scrollcommon', self.el)[0], { hScrollbar: true, vScrollbar: true });
+        }
 
         
 

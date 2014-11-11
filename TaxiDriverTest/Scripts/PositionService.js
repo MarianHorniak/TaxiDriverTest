@@ -77,16 +77,18 @@ var PositionService = {
 
                 var posChanged = PositionService._lat != PositionService.lat && PositionService._lng != PositionService.lng;
 
-                
+
                 if (posChanged) {
                     PositionService._lat = PositionService.lat;
                     PositionService._lng = PositionService.lng;
                     Globals.Position_Lat = PositionService.lat;
                     Globals.Position_Lng = PositionService.lng;
                 
-                    //stanoviste - zmena ! 
+                    //stanoviste - zmena ! moze byt ppri stanovist
                     Stand.CheckStandAvailable();
 
+                    //moze opustat stanoviste a neodhlasil sa
+                    Stand.CheckStandLeave();
                 }
 
                 Service.callService("MobilePool", {
@@ -154,15 +156,25 @@ var PositionService = {
         //messages 
         if (checkSum_Messages && checkSum_Messages  != Service.messagesVer)
         {
+            //pozor, mozu byt aj nulove messages !
+            var hasNew = false;
             Service.messagesVer = checkSum_Messages;
-            app.setStatusBarNewMessage();
-            MediaInternal.playSoundInMedia("Message_New");
+            var res = checkSum_Messages.split(Globals.SplitString);
+            if (res && res.length == 2 && res[1] != "0") {
+                hasNew = true;
+            }
+            if (hasNew) {
+                app.setStatusBarNewMessage();
+                MediaInternal.playSoundInMedia("Message_New");
+            }
+
+        }
+
+        //nieco je s transporterom na servri, napr stanoviste 
+        if (checkSum_Transporter && checkSum_Transporter != Service.transporterVer) {
+            Transporter.ProcessCheckSum(checkSum_Transporter);
         }
 
 
-        //if (d.tVer && d.tVer != Service.transporterVer) {
-        //    Service.transporterVer = d.tVer;
-            
-        //}
     }
 }

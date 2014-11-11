@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <widget xmlns       = "http://www.w3.org/ns/widgets"
         xmlns:gap   = "http://phonegap.com/ns/1.0"
-        id          = "sk.datastream.taxi"
+        id          = "sk.datastream.taxidrivertest"
         versionCode = "434"
         version     = "1.4.34">
  
@@ -22,7 +22,7 @@
   <icon src="img/phoneicon76.png"       gap:platform="ios" width="76"  height="76"  />
       
   <preference name="load-url-timeout" value="60000" />
-  <preference name="phonegap-version" value="2.9.0" />
+  <preference name="phonegap-version" value="3.6.3" />
   <preference name="DisallowOverscroll" value="true" />
   <preference name="exit-on-suspend" value="false" />
   <preference name="KeepRunning " value="true" />

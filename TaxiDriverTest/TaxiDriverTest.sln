@@ -1,8 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TaxiDriverTest", ".", "{DE23C80B-F073-4427-8A87-CC09218754E6}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TaxiDriverTest", "..\TaxiDriverTest", "{DE23C80B-F073-4427-8A87-CC09218754E6}"
 	ProjectSection(WebsiteProperties) = preProject
+		SccProjectName = "SAK"
+		SccAuxPath = "SAK"
+		SccLocalPath = "SAK"
+		SccProvider = "SAK"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
 		Debug.AspNetCompiler.VirtualPath = "/TaxiDriverTest"
 		Debug.AspNetCompiler.PhysicalPath = "..\TaxiDriverTest\"
@@ -22,6 +26,16 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TaxiDriverTest", ".", "{DE2
 	EndProjectSection
 EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://df4:8080/tfs/dflexnr
+		SccLocalPath0 = .
+		SccWebProject1 = true
+		SccProjectUniqueName1 = .
+		SccLocalPath1 = .
+		SccProjectEnlistmentChoice1 = 2
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 	EndGlobalSection

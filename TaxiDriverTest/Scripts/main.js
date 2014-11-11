@@ -174,7 +174,7 @@
         //$('body').on('app.clickEvent, '#newOrder', function (event) { Service.autoOrder(); });
         $('body').on(app.clickEvent, '#unbreakButton', function (event) { $("#unbreakButton").hide(); Service.unBreak(); });
         $('body').on(app.clickEvent, '#unalarmButton', function (event) { $("#unalarmButton").hide(); Service.unAlarm(); });
-        $('body').on(app.clickEvent, '#taxiAlarm', function (event) { Service.alarm(); });
+        $('body').on(app.clickEvent, '#taxiAlarm', function (event) { Service.alarmConfirm(); });
         $('body').on(app.clickEvent, '#btnRecallMe', function (event) { Service.recallme(); });
         $('body').on(app.clickEvent, '#btnSubmenu', function (event) { app.submenu(); });
         $('body').on(app.clickEvent, '#btnNewsClose', function (event) { app.hideNews(); });
@@ -243,9 +243,10 @@
                 case "allsettings": page = new SettingsAllView(); break;
                 case "settings": page = new SettingsView(); break;
                 case "detail": page = new OrderDetail(); break;
+                case "lists": page = new ListView(); break;
                 case "autoorder": page = new AutoOrderView(); break;
+                case "autoorderdisp": page = new AutoOrderToDispView(); break;
                 case "messagenew": page = new MessageNewView(); break;
-
                 default: this.showAlert("Undefined page:" + p, "ERROR"); return;
             }
             this.pages[p] = page;
@@ -317,9 +318,13 @@
         $("#taxiHeader")
                    .removeClass()
                    .addClass(Service.transporter.Status);
+        //$("#taxiText")
+        //    .empty()
+        //    .html(settings.name + " " + Service.transporter.SPZ + " [" + Service.getTransporterStatusText()+"]");
+
         $("#taxiText")
             .empty()
-            .html(settings.name + " " + Service.transporter.SPZ + " [" + Service.getTransporterStatusText()+"]");
+            .html(settings.name + " " + Service.transporter.SPZ);
     },
 
     setStatusBar: function (info,offer, messages, park) {
@@ -342,6 +347,10 @@
     setStatusBarNewMessage: function () {
         $("#taxiStatusMessages").removeClass("None");
         $("#taxiStatusMessages").addClass("New");
+        //$("#taxiStatusMessages").addClass("icon");
+        //$("#taxiStatusMessages").addClass("message");
+
+
 
     },
 

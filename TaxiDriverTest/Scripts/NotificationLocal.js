@@ -13,30 +13,30 @@
                         break;
 
                     case "changeofferup":
-                        Stand.LeaveStand();
+                        //Stand.LeaveStand();
                         break;
 
                     case "changeoffer":
                         break;
 
                     case "autoorder":
-                        Stand.LeaveStand();
+                        //Stand.LeaveStand();
                         break;
 
                     case "orderchange":
-                        Stand.LeaveStand();
+                        //Stand.LeaveStand();
                         break;
 
                     case "stateschange":
-                        Stand.LeaveStand();
+                        //Stand.LeaveStand();
                         break;
 
                     case "logout":
-                        Stand.LeaveStand();
+                        //Stand.LeaveStand();
                         break;
 
                     case "login":
-                        Stand.LeaveStand();
+                        //Stand.LeaveStand();
                         break;
 
                 }

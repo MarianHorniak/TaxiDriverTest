@@ -109,7 +109,7 @@
             }
 
             //uz sme prihlaseni, nemozme nastupit na stanoviste
-            if (Globals.GLOB_GUID_Stand != "" || standresult.Items[i].FreePlaces < 1) standresult.Items[i].CanStand = false;
+            if (Globals.GLOB_GUID_Stand != Globals.GUIDEmpty || standresult.Items[i].FreePlaces < 1) standresult.Items[i].CanStand = false;
 
             
             //nemoze sa prihlasit pre vzdialenost!!!
@@ -232,13 +232,22 @@ var Stand = {
 
     },
 
-
-    CheckStandAvailable: function()
+    JoinStandFromNews: function(StandGuid)
     {
 
-        //ak sme na stanovisti, tak prec ! 
-        if (Globals.GLOB_GUID_Stand != "") return;
+        var sw = new StandView();
+        sw.joinStand(StandGuid);
 
+    },
+
+    CheckStandAvailable: function () {
+
+        //ak sme na stanovisti, tak prec ! 
+        if (Globals.GLOB_GUID_Stand != Globals.GUIDEmpty) return;
+
+        //iba ak je free ma vyznam stanoviste
+        if (Service.transporter.Status && Service.transporter.Status != "Free")
+            return;
 
         //od poslenej ponuky neubehlo este dost casu ? 
         var differenceSec = (Date.now() - Stand.lastOffer) / 1000;
@@ -248,6 +257,7 @@ var Stand = {
 
         var Distanceminkm = 100000;
         var StandNear = "";
+        var StandGuid = "";
 
         var standresult = Lists.getListItems("Stand");
         for (var i = 0; i < standresult.Items.length; i++) {
@@ -257,46 +267,74 @@ var Stand = {
             if (Distancekm0 < Distanceminkm) {
                 Distanceminkm = Distancekm0;
                 StandNear = standresult.Items[i].Title;
+                StandGuid = standresult.Items[i].GUID;
             }
+
         }
 
-        //nie je na stanovisku
-        if (Globals.GLOB_GUID_Stand == "") {
+        //od poslenej ponuky neubehlo este dost casu ? 
+        var differenceSec = (Date.now() - Stand.lastOffer) / 1000;
+        if (differenceSec < Globals.constants.Stand_OfferSec) return;
 
-            //od poslenej ponuky neubehlo este dost casu ? 
-            var differenceSec = (Date.now() - Stand.lastOffer) / 1000;
-            if (differenceSec < Globals.constants.Stand_OfferSec) return;
+        var availbale = false;
+        //vyberiem z chache listu: 
 
-            var availbale = false;
-            //vyberiem z chache listu: 
+        if (Distanceminkm <= Globals.constants.Stand_Distancekm) availbale = true;
 
-            if (Distanceminkm <= Globals.constants.Stand_Distancekm) availbale = true;
-
-            if (availbale) {
-                console.log("CheckStandAvailable show News!!");
-                Stand.lastOffer = Date.now();
-                var content = Translator.Translate("Vo vašej blízkosti sa nachádza stanovište")+" : "+StandNear + "<br/><button id=\"btnStand\"  data-route=\"stand\" style=\"background-color:black;\" class=\"textnoicon\">Stanovištia</button>";
-                //app.showNew();
-                app.showNewsComplete(Translator.Translate("Stanovište"), MediaInternal.getNewsSoundFile("StandAvailable"), "", 10000, content);
-            }
-        }
-            //je na stanovisku, odosiel ? 
-        else {
-            if (Distanceminkm > Globals.constants.Stand_Distancekm)
-            {
-                //MHP - 19.3.2014 nemozeme to spravit, pretoze sa sem-tam strati GPS, vrati 0 a zrazu je sofer mimo stanovista 
-
-                //console.log("Leave stand automat!!");
-                //app.playSound(MediaInternal.getNewsSoundFile("StandLeave"));
-                //Stand.LeaveStand();
-            }
+        if (availbale) {
+            console.log("CheckStandAvailable show News!!");
+            Stand.lastOffer = Date.now();
+            //var content = Translator.Translate("Vo vašej blízkosti sa nachádza stanovište")+" : "+StandNear + "<br/><button id=\"btnStand\"  data-route=\"stand\" style=\"background-color:black;\" class=\"textnoicon\">Stanovištia</button>";
+            var scriptText = "onclick = \"Stand.JoinStandFromNews('" + StandGuid + "')\"";
+            var content = Translator.Translate("Vo vašej blízkosti sa nachádza stanovište") + " : " + StandNear + "<br/><button id=\"btnStand\" " + scriptText + "  style=\"background-color:black;\" class=\"textnoicon\">" + Translator.Translate("Vstúpiť") + "</button>";
+            //app.showNew();
+            app.showNewsComplete(Translator.Translate("Stanovište"), MediaInternal.getNewsSoundFile("StandAvailable"), "", 10000, content);
         }
 
     },
 
+    CheckStandLeave: function () {
+
+        //ak sme na stanovisti, tak prec ! 
+        if (Globals.GLOB_GUID_Stand == Globals.GUIDEmpty) return;
+
+
+        //od poslenej ponuky neubehlo este dost casu ? 
+        var differenceSec = (Date.now() - Stand.lastOffer) / 1000;
+        if (differenceSec < Globals.constants.Stand_OfferSec) return;
+
+        console.log("CheckStandLeave starts...");
+        var Distancekm = Geo.getDistanceFromLatLonInKm(Globals.Position_Lat, Globals.Position_Lng, Globals.Position_LatPrev, Globals.Position_LngPrev);
+
+        //je na stanovisku, odosiel ? 
+
+        if (Distancekm && Distancekm > Globals.constants.Stand_Distancekm) {
+            //MHP - 19.3.2014 nemozeme to spravit, pretoze sa sem-tam strati GPS, vrati 0 a zrazu je sofer mimo stanovista 
+            Stand.lastOffer = Date.now();
+            console.log("Leave stand possible");
+            var scriptText = "onclick = \"Stand.LeaveStand()\"";
+            var content = Translator.Translate("Pravdepodobne opúštate stanovište") + "<br/><button id=\"btnStand\" " + scriptText + "  style=\"background-color:black;\" class=\"textnoicon\">" + Translator.Translate("Opustiť") + "</button>";
+            app.showNewsComplete(Translator.Translate("Stanovište"), null, "", 10000, content);
+
+        }
+    },
+
+    evaluateStand: function()
+    {
+        //out
+        if (Globals.GLOB_GUID_Stand == "" || Globals.GLOB_GUID_Stand == Globals.GUIDEmpty) {
+            Stand.setIconFree();
+            app.setStatusBarNonePark();
+        }
+        else {
+            Stand.setIconNotFree();
+            app.setStatusBarNewPark();
+        }
+    },
+
     succesLeaveStand : function ()
     {
-        Globals.GLOB_GUID_Stand = "";
+        Globals.GLOB_GUID_Stand = Globals.GUIDEmpty;
         Globals.GLOB_StandPosition = 0;
         Stand.setIconFree();
         app.setStatusBarNonePark();
@@ -304,8 +342,10 @@ var Stand = {
 
     LeaveStand : function (callback)
     {
+        //zavrieme news okno
+        app.hideNews();
 
-        if (Globals.GLOB_GUID_Stand == "")
+        if (Globals.GLOB_GUID_Stand == Globals.GUIDEmpty)
         {
             app.log("Leave stand not need");
             return;

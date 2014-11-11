@@ -31,6 +31,7 @@ var Map = {
     mess: null,
     messError: null,
     geocoder: null,
+    carCount:0,
     apiIsOk: false,
     initialize: function (el) {
         var header = $('<div class="header"><button data-route="orders" class="icon ico_back">&nbsp;</button></div>').appendTo(el);
@@ -60,14 +61,20 @@ var Map = {
         var s = Service.getSettings();
         Service.callService("datamobile", { Id: "viewWebClientTransporters" },
             function (result) {
-                Map.mapOut2.html(Translator.Translate("Počet") + ": " + result.Items.length);
+                Map.carCount = result.Items.length;
+                //Map.mapOut2.html(Translator.Translate("Počet") + ": " + result.Items.length);
                 self.datatransporters = result;
                 console.log("get map view data " + result.Items.length);
                 $.each(self.datatransporters.Items, function () {
                     var item = this;
+                    var iconurl = "";
+                    if (s) iconurl = s.url + "/resources/icon/Transporter_";
+                    if (item && item.Status) iconurl = iconurl + item.Status;
+                    if (item && item.DriverTitle) iconurl = iconurl + "_1_" + item.DriverTitle;
+
+
                     var m = new  google.maps.Marker({
-                        //icon: { url: "img/cabs.png" },
-                        //labelContent: 'A',
+                        icon: {url:iconurl},
                         position: new google.maps.LatLng(item.Latitude, item.Longitude),
                         title:item.Title,
                         clickable: false,
@@ -100,12 +107,17 @@ var Map = {
         var self = this;
         Map.date = new Date().toTimeString();
         Map.message("Pozícia " + Map.date);
+        var poc = "";
+        if (Map.carCount && Map.carCount > 0) poc = Translator.Translate('Počet') + ': ' + Map.carCount;
+
         var d = Translator.Translate('Lat.')+': ' + position.coords.latitude + '  ' +
         Translator.Translate('Long.')+': ' + position.coords.longitude + '<br />' +
-        Translator.Translate('Presnosť')+': ' + position.coords.accuracy + "m" + '<br />';
+        Translator.Translate('Presnosť') + ': ' + position.coords.accuracy + "m, " +
+        poc + 
+        '<br />';
         var ddop = "";
         Map.geocode({ 'latLng': new google.maps.LatLng(position.coords.latitude, position.coords.longitude) }, function (a) {
-            ddop = Translator.Translate('Address')+': ' + a.City + ' ' + a.Address;
+            ddop = Translator.Translate('Adresa')+': ' + a.City + ' ' + a.Address;
             Map.mapOut.html(d + ddop);
             Map.setMap(position);
             PositionService.lat = position.coords.latitude;

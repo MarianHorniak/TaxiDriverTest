@@ -66,6 +66,9 @@
                 self.getViewCommon("view_orders_historyreservations");
                 //self.viewReservations(); //view_orders_historyreservations
                 break;
+            case "Disp24":
+                self.getViewCommon("view_orders_disp24Hour");
+                break;
             //case "Test":
             //    self.viewtest();
             //    break;
@@ -87,7 +90,10 @@
         var i = 1;
         $.each(orders.Items, function () {
             this.FormatedDate = Service.formatJsonDate(this.OrderToDate);
+            this.SpecialConditionsRender = '';
+            if (this.SpecialConditions) this.SpecialConditionsRender = this.SpecialConditions;
             this.Status = Service.setOrderDescription(this);
+            this.isOddCSS = Tools.isOddCSS(i);
             this.iOrder = i++;
         });
 
@@ -95,7 +101,7 @@
         if (self.iscroll)
             self.iscroll.refresh();
         else
-            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
+            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: true });
 
         app.waiting(false);
         $('.ordersHistory-list').show();
@@ -110,13 +116,14 @@
             //fake guid :
             this.GUID = "aaa";
             this.Status = Service.setOrderDescription(this);
+            this.isOddCSS = Tools.isOddCSS(i);
             this.iOrder = i++;
         });
 
         if (self.iscroll)
             self.iscroll.refresh();
         else
-            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
+            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: true });
 
         app.waiting(false);
         $('.ordersHistory-list').html(OrdersHistoryView.liTemplateTab(data.Items));

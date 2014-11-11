@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>TAXI driver test</title>
+    <title>TAXI driver test DataStream</title>
     <meta charset="utf-8"/>
     <link href="css/styles.css" rel="stylesheet">
 </head>
@@ -28,8 +28,8 @@
             <div id="taxiStatus">
                 <div class="None" id="taxiStatusInfo">I</div> 
                 <div class="None" id="taxiStatusOffers">O</div> 
-                <div class="None" id="taxiStatusMessages">S</div> 
-                <div class="None" id="taxiStatusPark">P</div> 
+                <div class="None" data-route="messages" id="taxiStatusMessages">S</div> 
+                <div class="None" data-route="stand" id="taxiStatusPark">P</div> 
             </div>
 
 </div>
@@ -43,6 +43,8 @@
     <button id ="btnRecallMe" title="Recall me" class="icon ico_phone">&nbsp;</button>
     <button data-route="states" class="icon ico_stop">&nbsp;</button>
     <button id="btnStand"  data-route="stand" class="icon standMenuFree">&nbsp;</button>
+    <button id="btnLists"  data-route="lists" class="icon ico_lists">&nbsp;</button>
+    <button id="btnAutoOrderToDisp"  data-route="autoorderdisp" class="icon ico_autoordertodisp">&nbsp;</button>
     <button id="btnSetting"  data-route="allsettings" class="icon ico_settings">&nbsp;</button>
 </div>
 
@@ -66,8 +68,7 @@
 {{#.}}
 <div id="{{this.GUID}}" class="{{this.Status}} {{this.StatusDescription}}" data_GUID_Offer="{{this.GUID_Offer}}" data_StatusOffer="{{this.StatusOffer}}" data_Id="{{this.GUID}}" data_Status="{{this.Status}}">
 
-    {{#if this.StatusCancel}}
-    {{else}}
+    {{#if this.ShowCancelbtn}}
     <div class="icon cancel">&nbsp;</div>
     {{/if}}
 
@@ -150,6 +151,8 @@
         <option value="My24h">Moje 24 hod.</option>
         <option value="My1Month">Moje 1 mesiac</option>
         <option value="Reservations">Rezervácie</option>
+        <option value="Disp24">Disp 24 hod.</option>
+
         <!--<option value="MyTodayTab">Moje dnes</option>-->
         <!--<option value="MyYestTab">Moje včera</option>-->
     </select>
@@ -160,8 +163,10 @@
 
 <script id="ordersHistory-li-tpl" type="text/x-handlebars-template">
 {{#.}}
-<div data_Id="{{this.GUID}}" data_Status="{{this.Status}}" class="{{this.Status}}">
-    <div class="content"><strong>[{{this.iOrder}}] {{this.FormatedDate}}</strong> {{this.StatusTranslation}} odkiaľ: {{this.StartCity}} {{this.StartAddress}}, kam: {{this.EndCity}} {{this.EndAddress}}, zdroj: {{this.OrderSource}}, kto: {{this.DriverTitle}}</div>
+<div data_Id="{{this.GUID}}" data_Status="{{this.Status}}" class="{{this.isOddCSS}}">
+    <div class="content"><strong>[{{this.iOrder}}] {{this.FormatedDate}}</strong> {{this.StatusTranslation}} odkiaľ: {{this.StartCity}} {{this.StartAddress}}, kam: {{this.EndCity}} {{this.EndAddress}}, zdroj: {{this.OrderSource}}, kto: {{this.DriverTitle}}
+        {{#if this.SpecialConditionsRender}}        spec:  {{this.SpecialConditionsRender}} {{/if}}
+    </div>
 </div>
 {{/.}}
 </script>
@@ -169,19 +174,50 @@
 <script id="ordersHistoryraw-li-tpl" type="text/x-handlebars-template">
 {{#.}}
 <div>
-    <div class="content"><strong>{{this.GUID}} {{this.freetext}} </strong></div>
+    <div class="{{this.isOddCSS}}"><strong>{{this.GUID}} {{this.freetext}} </strong></div>
 </div>
 {{/.}}
 </script>
 
 <script id="ordersHistorytab-li-tpl" type="text/x-handlebars-template">
 {{#.}}
-<div class="{{this.Status}}">
+<div class="{{this.isOddCSS}}">
     <div class="content"><strong>{{this.StatusTranslation}} : {{this.Pocet}} </strong></div>
 </div>
 {{/.}}
         
 </script>
+
+<!-- Lists start -->
+    <script id="lists-tpl" type="text/x-handlebars-template">
+<div class='header'><button id="listsBack" class="icon ico_back">&nbsp;</button>
+    <button id="listsTitle" class="textHeaderTitle" disabled="disabled">Číselníky</button>
+    <div style="position:absolute; left:200px; top:2px; right:0px;">
+    <select id="selectList">
+        <option value="noselect">-----</option>
+        <option value="listPlace">Place</option>
+        <option value="listMessageTemplate">Správy</option>
+    </select>
+ </div>
+</div>
+<div class="scrollBottom"><div class='buttonlist lists-list'></div></div>
+</script>
+
+<script id="lists-li-tpl" type="text/x-handlebars-template">
+     <div class="FullContent">
+{{#.}}
+<div data_Id="{{this.GUID}}" class="{{this.isOddCSS}}">
+    <div>
+        <strong>{{this.Title}}</strong> 
+        {{#if this.Text1}}{{this.Text1}} {{/if}}
+        {{#if this.Text2}}{{this.Text2}} {{/if}}
+    </div>
+</div>
+{{/.}}
+         </div>
+</script>
+
+<!-- Lists end -->
 
 
 <!-- OrderDetail -->
@@ -190,18 +226,21 @@
         <!--<button id="orderDetailBack" class="icon ico_back">&nbsp;</button>-->
         <!--<button id="orderCall" class="icon ico_phone">&nbsp;</button>-->
     
-        <div id="orderDetailTabs" class="tabs">
+        <div id="orderDetailTabs" class="tabs scrollhoriz">
             <button id="orderDetailBack" class="icon ico_back">&nbsp;</button>
-            <button id="orderCall" class="icon ico_phone">&nbsp;</button>
-            <div id="orderTimeTab" class="selected">Čas</div>
-            <div id="orderDetailTab">Detail</div>
-            <div id="orderMapTab">Mapa</div>
+
+                <button id="orderCall" class="icon ico_phone">&nbsp;</button>
+                <div id="orderTimeTab" class="selected">Čas</div>
+                <div id="orderDetailTab">Detail</div>
+                <div id="orderPaymentTab">Platba</div>
+                <div id="orderMapTab">Mapa</div>
+
         </div>
     
     </div>    
 
     <div id="orderDetailContent" class="scrollBottom">
-        <div class="scrollBottom" id="orderDetailTime">
+        <div  id="orderDetailTime">
             <button id="orderDetailSave" class="icon texticon ico_submit">&nbsp;</button>
                <input type="hidden" id="OrderTimeToRealize" name="TimeToRealize"/>
               <div id="OrderTimeToRealizeRadio" class="radiolist">
@@ -220,43 +259,39 @@
             </div>
             
         </div>
-        <form id="orderDetailForm"></form>
+        <div id="orderDetailForm" class="FullContent"></div>
+        <div id="orderDetailPayment" class="FullContent">
+            <strong>Cena celkovo:</strong> <br/> 
+            <input type="text" placeholder="Payment" name="PaymentTotal" id="orderDetailFormPaymentTotal" value="0"/>
+            <button id ="btnorderDetailPaymentTotal" title="Potvrdiť"  class="icon texticon ico_submit">Potvrdiť</button> <br/> 
+        </div>
         <div id="orderDetailMap"></div>
     </div>
 </script>
 
 <script id="orderDetailForm-tpl" type="text/x-handlebars-template">
-    <div>
-        <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong>
-    </div>
-    <div>
-        <strong>Odkiaľ:</strong> {{this.StartCity}} {{this.StartAddress}}
-    </div>
-     {{#if this.EndCity}}
-    <div>
-        <strong>Kam:</strong> {{this.EndCity}} {{this.EndAddress}}
-    </div>
-     {{/if}}
-    <div>
-        <strong>Kontakt:</strong> {{this.CustomerName}} 
-       {{#if Globals.Orders_List_ShowCustomerPhone}}
-            {{this.CustomerPhone}} 
-       {{/if}}
-    </div>
+       <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong> <br/>   
+       <strong>Odkiaľ:</strong> {{this.StartCity}} {{this.StartAddress}} <br/> 
+
+        <strong>Kam:</strong> <br/> 
+        <input type="text" placeholder="EndCity" name="EndCity" id="orderDetailFormEndCity" value="{{this.EndCity}}"/>
+        <input type="text" placeholder="EndAddress" name="EndAddress" id="orderDetailFormEndAddress" value="{{this.EndAddress}}"/>
+        <button id ="btnorderDetailFormChangeEndAddress" title="Zmeniť adresu" class="icon texticon ico_submit">Zmeniť cieľ</button> <br/> 
+
+     <strong>Kontakt:</strong> {{this.CustomerName}}  {{#if Globals.Orders_List_ShowCustomerPhone}}   {{this.CustomerPhone}}  {{/if}}     <br/>
      {{#if this.Persons}}
-    <div>
-        <strong>Počet pasažierov:</strong> {{this.Persons}}
-    </div>
+            <strong>Počet pasažierov:</strong> {{this.Persons}}   <br/>
      {{/if}}
      {{#if this.SpecialConditions}}
-    <div>
-        <strong>Špeciálne požiadavky:</strong> {{this.SpecialConditions}}
-    </div>
+               <strong>Špeciálne požiadavky:</strong> {{this.SpecialConditions}}   <br/>
      {{/if}}
+            <strong>GUID:</strong> {{this.GUID}}    
     {{#if this.ErrorMessage}}
-    <div class="error">{{this.ErrorMessage}}</div>
+        <div class="error">{{this.ErrorMessage}}</div>
      {{/if}}
 </script>
+
+
 
 <!-- States -->
 <script id="states-tpl" type="text/x-handlebars-template">
@@ -300,12 +335,40 @@
 </script>
 
 <script id="autoorderForm-template" type="text/x-handlebars-template">
-<input id="AutoOrderEndCity"  name="EndCity" value="{{this.EndCity}}" type="text" placeholder="Kam mesto" />
-<input id="AutoOrderEndAddress" name="EndAddress" value="{{this.EndAddress}}" type="text" placeholder="Kam adresa"  />
+ <div id="divStartAddress" style="display:none">
+    <label>Odkiaľ</label><br />
+    <input id="AutoOrderStartCity"  name="StartCity" value="{{this.StartCity}}" type="text" placeholder="Odkiaľ mesto" />
+    <input id="AutoOrderStartAddress"  name="StartAddress" value="{{this.StartAddress}}" type="text" placeholder="Odkiaľ adresa" />
+ </div>
+    <div id="divEndAddress">
+        <label>Kam</label><br />
+ <input id="AutoOrderEndCity"  name="EndCity" value="{{this.EndCity}}" type="text" placeholder="Kam mesto" />
+ <input id="AutoOrderEndAddress" name="EndAddress" value="{{this.EndAddress}}" type="text" placeholder="Kam adresa"  />
  <input id="AutoOrderTimeToRealize" name="TimeToRealize" value="{{this.TimeToRealize}}" type="number" placeholder="min." />
+        </div>
+ <input id="AutoOrderToReserved" name="isReserved" value="{{this.isReserved}}" type="checkbox" title="Rezervácia" /><label for="AutoOrderToReserved">Rezervácia</label>
+
 {{#if this.ErrorMessage}}<div class="error">{{this.ErrorMessage}}</div>{{/if}}
 </script>
     
+        <!-- AutoOrder to DISP -->
+<script id="autoordertodisp-tpl" type="text/x-handlebars-template">
+<div class='header'><button data-route="orders" class="icon ico_back">&nbsp;</button>
+    <button id="autoordertodispTitle" class="textHeaderTitle" disabled="disabled">Auto -> disp.</button>
+    <button id="autoordertodispSave" title="Zadať objednávku na dispečing" class="icon texticon ico_submit">&nbsp;</button>
+</div>
+<div class="scrollBottom"><form id="autoordertodispForm"></form></div>
+</script>
+    <script id="autoordertodispForm-template" type="text/x-handlebars-template">
+    <label>Odkiaľ</label><br />
+    <input id="AutoOrdertodispStartCity"  name="StartCity" value="{{this.StartCity}}" type="text" placeholder="Odkiaľ mesto" />
+    <input id="AutoOrdertodispStartAddress"  name="StartAddress" value="{{this.StartAddress}}" type="text" placeholder="Odkiaľ adresa" />
+    <label>Zákazník</label><br />
+    <input id="AutoOrdertodispName"  name="StartName" type="text"  placeholder="Meno" />
+    <input id="AutoOrdertodispOhone"  name="StartPhone" type="text"   placeholder="Telefon" />
+{{#if this.ErrorMessage}}<div class="error">{{this.ErrorMessage}}</div>{{/if}}
+</script>
+
  <!-- MessageNEW -->
 <script id="messagenew-tpl" type="text/x-handlebars-template">
 <div class='header'><button data-route="orders" class="icon ico_back">&nbsp;</button>
@@ -407,13 +470,15 @@
  <!-- Settings ALL detail -->
  <script id="settingsallForm-tpl" type="text/x-handlebars-template">
 <form id="settingsallForm-form">
+    <div class="FullContent scrollcommon">
             {{#.}}
                {{#if this.isHeader}}  
-                   <div><strong>{{this.Title}}</strong></div>
+                   <div class="GroupHeader">{{this.Title}}</div>
                {{else}}  
-                    <div class="content"><strong>{{this.Group}}  {{this.Title}} {{this.value}} </strong></div>
+                    <div class="content">{{this.Title}} <strong> {{this.value}} </strong></div>
                {{/if}} 
             {{/.}}
+        </div>
 </form>
 </script>
 
@@ -447,5 +512,9 @@
 <script src="Scripts/Diagnostic.js"></script>
 <script src="http://maps.google.com/maps/api/js?sensor=false&callback=Map.apiOK"></script>
 <script src="Scripts/AutoOrderView.js"></script>
+<script src="Scripts/Transporter.js"></script>
+<script src="Scripts/AutoOrderToDispView.js"></script>
+<script src="Scripts/ListView.js"></script>
+<script src="Scripts/Tools.js"></script>
 </body>
 </html>
