@@ -384,7 +384,8 @@
             GUID_sysUser_Sender: GUID_sysUser_Sender,
             GUID_sysUser_Receiver:GUID_sysUser_Receiver,
             Latitude: Latitude,
-            Longitude: Longitude
+            Longitude: Longitude,
+
         },
             function () {
                 app.route("messages");

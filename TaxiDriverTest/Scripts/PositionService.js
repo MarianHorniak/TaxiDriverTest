@@ -94,7 +94,7 @@ var PositionService = {
                 Service.callService("MobilePool", {
                     Id: s.transporterId,
                     Lat: posChanged ? PositionService.lat : 0,
-                    Lng: posChanged ? PositionService.lng : 0
+                    Lng: posChanged ? PositionService.lng : 0,
                 },
                 function (d) { PositionService.startPool(); app.info(""); PositionService.refreshVersionData(d); },
                 function (d) { PositionService.startPool(); if (d.ErrorMessage) app.info(d.ErrorMessage); PositionService.refreshVersionData(d); });
