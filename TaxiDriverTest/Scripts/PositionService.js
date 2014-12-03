@@ -89,7 +89,7 @@ var PositionService = {
 
                     //moze opustat stanoviste a neodhlasil sa
                     Stand.CheckStandLeave();
-                }
+                } 
 
                 Service.callService("MobilePool", {
                     Id: s.transporterId,
@@ -138,7 +138,7 @@ var PositionService = {
                 var isSpecial = Service.ordersVer.indexOf("BroadCast") > -1
                 //nova objednavka, alebo broadcast ? 
                 if (isSpecial) {
-                    MediaInternal.playSoundInMedia("Order_Broadcast");
+                    MediaInternal.playSoundInMedia("Order_Broadcast",1,0);
                 }
                 else {
                     app.playNew();
@@ -165,7 +165,7 @@ var PositionService = {
             }
             if (hasNew) {
                 app.setStatusBarNewMessage();
-                MediaInternal.playSoundInMedia("Message_New");
+                MediaInternal.playSoundInMedia("Message_New",1,0);
             }
 
         }

@@ -273,7 +273,7 @@ var Stand = {
         }
 
         //od poslenej ponuky neubehlo este dost casu ? 
-        var differenceSec = (Date.now() - Stand.lastOffer) / 1000;
+        var differenceSec = (Date.now() - Stand.lastOffer) / 1000;//1000;
         if (differenceSec < Globals.constants.Stand_OfferSec) return;
 
         var availbale = false;
@@ -288,7 +288,7 @@ var Stand = {
             var scriptText = "onclick = \"Stand.JoinStandFromNews('" + StandGuid + "')\"";
             var content = Translator.Translate("Vo vašej blízkosti sa nachádza stanovište") + " : " + StandNear + "<br/><button id=\"btnStand\" " + scriptText + "  style=\"background-color:black;\" class=\"textnoicon\">" + Translator.Translate("Vstúpiť") + "</button>";
             //app.showNew();
-            app.showNewsComplete(Translator.Translate("Stanovište"), MediaInternal.getNewsSoundFile("StandAvailable"), "", 10000, content);
+            app.showNewsComplete(Translator.Translate("Stanovište"), "StandAvailable", "", 10000, content);
         }
 
     },
@@ -314,7 +314,7 @@ var Stand = {
             console.log("Leave stand possible");
             var scriptText = "onclick = \"Stand.LeaveStand()\"";
             var content = Translator.Translate("Pravdepodobne opúštate stanovište") + "<br/><button id=\"btnStand\" " + scriptText + "  style=\"background-color:black;\" class=\"textnoicon\">" + Translator.Translate("Opustiť") + "</button>";
-            app.showNewsComplete(Translator.Translate("Stanovište"), null, "", 10000, content);
+            app.showNewsComplete(Translator.Translate("Stanovište"), "LeaveStand", "", 10000, content);
 
         }
     },

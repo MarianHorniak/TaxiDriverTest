@@ -17,7 +17,10 @@
         GLOB_LocalLists: new Array("Stand", "sysMessageTemplate"),
 
         //sounds
-        soundItems : {
+        soundItems: {
+            "SetPayment": "SetPayment.mp3",
+            "StandAvailable": "StandAvailable.mp3",
+            "StandLeave": "StandLeave.mp3",
             "Order_Change":"sound_order.mp3",
             "Order_Broadcast":"sound_orderbroadcast2.mp3",
             "Message_New":"sound_message.mp3",

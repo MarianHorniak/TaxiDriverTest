@@ -140,7 +140,7 @@ var OrdersView = function () {
         }
         var content1 = "<input type=\"text\" placeholder=\"Payment\" name=\"PaymentTotal\" id=\"orderNewsDetailFormPaymentTotal\" value=\""+pToinput+"\"/><br/>";
         var content = Translator.Translate("Cena celkovo:") + content1 + "<br/><button id=\"btnsetPayment\" " + scriptText + "  style=\"background-color:black;\" class=\"textnoicon\">" + Translator.Translate("Zadať") + "</button>";
-        app.showNewsComplete(Translator.Translate("Platba"), null, "", 100000, content);
+        app.showNewsComplete(Translator.Translate("Platba"), "SetPayment", "", 100000, content);
         return;
     }
 

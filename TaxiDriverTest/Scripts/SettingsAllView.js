@@ -29,6 +29,11 @@ var SettingsAllView = function (messages) {
         var s = Service.getSettings();
         var data = new Array();
         
+        //Device navigator
+        data[data.length] = { isHeader: "Y", Title: "Device" };
+        data[data.length] = { Group: "Device", Title: "userAgent", value: navigator.userAgent };
+        data[data.length] = { Group: "Device", Title: "platform", value: navigator.platform };
+
         //Media
         data[data.length] = { isHeader: "Y", Title: "Media" };
         data[data.length] = { Group: "Media", Title: "Volume", value: Globals.Media_Volume };

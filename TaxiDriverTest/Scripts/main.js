@@ -2,6 +2,8 @@
     currentPage: null,
     currentPageName: null,
     isDevice: false,
+    userAgent:"",
+    platform: "",
     clickEvent: "click",
     mediaNew : null,
     mediaAlert : null,
@@ -31,16 +33,17 @@
     },
 
     showNews: function (content) {
-        var soundFile = "audio/sound_new.mp3";
+        var soundFile = MediaInternal.defaultNewsSoundfile; // "audio/sound_new.mp3";
         app.showNewsComplete(Translator.Translate("Warning"), soundFile, "", 10000, content)
     },
 
     showNewsComplete: function (title, soundFile, color, hideinmilisec, content) {
-        if (!soundFile | soundFile=="") soundFile = "audio/sound_new.mp3";
+        if (!soundFile | soundFile == "") soundFile = MediaInternal.defaultNewsSoundfile; //"audio/sound_new.mp3";
         $("#taxiNewsContent").html(content);
         $("#taxiNewsTitle").html(title);
         $("#taxiNewFull").show(200);
-        app.playSound(soundFile);
+        //app.playSound(soundFile);
+        MediaInternal.playSoundInMedia(soundFile,1,1);
         window.setTimeout(function () { app.hideNews(); }, hideinmilisec);
     },
 
@@ -380,6 +383,15 @@
         }
         else return "";
     },
+
+    getAndroidPath: function () {
+        if (app.isDevice) {
+            var path = "/android_asset/www/";
+            return path;
+        }
+        else return "";
+    },
+
     initialize: function () {
         app.log("app.initialize");
         app.log("app.isDevice: " + this.isDevice);
@@ -410,7 +422,11 @@
 };
 
 function onLoad() {
+    app.userAgent = navigator.userAgent;
     app.isDevice = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
+    app.platform = navigator.platform;
+
+
     if (app.isDevice) {
         app.clickEvent = "tap";
         document.addEventListener("deviceready", function () { app.initialize(); }, false);
