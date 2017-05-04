@@ -8,7 +8,7 @@ var MessageNewView = function (store) {
     this.render = function () {
         this.el.html(MessageNewView.template());
         var self = this;
-        $("#messagenewSave").off(app.clickEvent,function () { self.save(); });
+        $("#messagenewSave").off(app.clickEvent);
         $("#messagenewSave").on(app.clickEvent,function () { self.save(); });
         return this;
     };
@@ -33,10 +33,29 @@ var MessageNewView = function (store) {
 
         $("#messagenewForm").html(MessageNewView.formTemplate(data));
 
-        //bind data
-        this.dataMessageTypes = Lists.getListItems("sysMessageTemplate");
-        //$("#messagenewType").text = Globals.MessageType;
-        //$("#messagenewTimeToLive").text = Globals.MessageTimeToLiveMin;
+
+        //soplnime options
+        var cis = Lists.getListItems("sysMessageTemplate");
+        console.log("load teplates for new message to dispetcher");
+        console.log(cis);
+        var el = $("#idselectNewMessToDisp");
+        if (el) {
+            el.empty(); //clear it !
+            var option = document.createElement("option");
+            option.text = "";
+            option.value = "no";
+            el.append(option);
+            var myItems = cis.Items.sort();
+            for (var i = 0; i < myItems.length; i++) {
+                var option1 = document.createElement("option");
+                option1.value = cis.Items[i].Title;
+                option1.text = cis.Items[i].MessageText;
+                el.append(option1);
+            }
+
+            Tools.sortSelect(el[0]);
+        }
+
 
         app.waiting(false);
     };
@@ -53,8 +72,24 @@ var MessageNewView = function (store) {
         var Typ = Globals.MessageType; //data["Typ"];
         var LifeTimeMinutes = Globals.MessageTimeToLiveMin; //data["LifeTimeMinutes"];
 
+        //ak nie je text, moze byt z dropdownu
+        if (Text == "" || Text.length == 0)
+        {
+            var el = $("#idselectNewMessToDisp");
+            if (el && el.length > 0)
+            {
+                Text = el[0].options[el[0].selectedIndex].text;
+            }
+        }
+
         //kontrola
-        if(Text=="" || Text.length==0) app.home();
+        if (Text == "" || Text.length == 0) {
+            app.home();
+            return;
+        }
+
+
+        console.log("text to send :" + Text);
 
         var s = Service.getSettings();
 

@@ -8,11 +8,13 @@
     this.render = function () {
         this.el.html(ListView.template());
         var self = this;
-        $("#listsBack").off(app.clickEvent, function () { app.home(); });
+        $("#listsBack").off(app.clickEvent);
         $("#listsBack").on(app.clickEvent, function () { app.home(); });
 
-        $("#selectList").off("change", function (e) { self.selectionChange(e); });
+        $("#selectList").off("change");
         $("#selectList").on("change", function (e) { self.selectionChange(e); });
+
+        self.iscroll = new IScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
         return this;
     };
 
@@ -35,6 +37,9 @@
         var self = this;
         $('.lists-list').hide();
         
+//        <option value="listRestrictedStreet">Zak. ulice</option>
+//<option value="listRestrictedPolygons">Zak. polygóny</option>
+//<option value="listNastBody">Nástupištia</option>
 
         app.waiting();
 
@@ -53,6 +58,19 @@
             case "listMessageTemplate":
                 self.getListCommon("viewDriver_MessageTemplate");
                 break;
+
+            case "listRestrictedStreet":
+                self.getListCommon("viewDriver_List_RestStreet");
+                break;
+
+            case "listRestrictedPolygons":
+                self.getListCommon("viewDriver_List_RestPoly");
+                break;
+
+            case "listNastBody":
+                self.getListCommon("viewDriver_List_StopPoint");
+                break;
+
         }
 
         app.waiting(false);
@@ -63,26 +81,18 @@
     this.renderListItems = function (listitems)
     {
         var i = 1;
+        console.log(listitems);
         $.each(listitems.Items, function () {
             this.isOddCSS = Tools.isOddCSS(i);
             this.iOrder = i++;
             
         });
 
-        $('.lists-list').html(ListView.liTemplate(listitems.Items));
-        if (self.iscroll)
-            self.iscroll.refresh();
-        else
-            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: true });
-
         app.waiting(false);
         $('.lists-list').show();
-        
+
+        this.iscroll.refresh();
     }
-
-
-
-
 
     this.getListCommon = function (listName,e) {
         var self = this;
@@ -97,10 +107,6 @@
         }
 
     }
-
-
-
-
 
     this.initialize();
 }

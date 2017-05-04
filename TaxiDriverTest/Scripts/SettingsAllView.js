@@ -8,6 +8,7 @@ var SettingsAllView = function (messages) {
     this.render = function () {
         var self = this;
         this.el.html(SettingsAllView.template());
+        self.iscroll = new IScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
         return this;
     };
 
@@ -61,6 +62,16 @@ var SettingsAllView = function (messages) {
         data[data.length] = { isHeader: "Y", Title: "Locale" };
         data[data.length] = { Group: "Locale", Title: "Language", value: Globals.language };
 
+
+        //other 
+        data[data.length] = { isHeader: "Y", Title: "Other" };
+        if (Globals.items) {
+            for (var i = 0, l = Globals.items.length; i < l; i++) {
+                data[data.length] = { Group: "Other", Title: Globals.items[i].Title, value: Globals.items[i].SettingValue };
+            }
+        }
+
+
         data[data.length] = { isHeader: "Y", Title: "Log" };
         var logData = Diagnostic.getLog();
         if (logData)
@@ -68,9 +79,9 @@ var SettingsAllView = function (messages) {
             for (var i = 0, l = logData.length; i < l; i++) {
                 data[data.length] = { Group: "Log", Title: logData[i].Date, value: logData[i].Message };
             }
-           }
+        }
         
-        
+      
 
 
         self.showForm(data);
@@ -81,20 +92,10 @@ var SettingsAllView = function (messages) {
         if (data) data.ErrorMessage = Service.connectionError;
 
         $("#settingsallForm").html(SettingsAllView.templateForm(data));
-
-
-        if (self.iscroll)
-            self.iscroll.refresh();
-        else {
-            //self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
-            self.iscroll = new iScroll($('.scrollcommon', self.el)[0], { hScrollbar: true, vScrollbar: true });
-        }
-
-        
-
         $("#settingsallForm").show();
            // $("#settingsallSave").removeClass("transparent");
         app.waiting(false);
+        this.iscroll.refresh();
     };
 
     this.initialize();

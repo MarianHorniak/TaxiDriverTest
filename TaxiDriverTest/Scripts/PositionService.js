@@ -14,7 +14,10 @@ var PositionService = {
                 navigator.geolocation.clearWatch(this.watchID);
 
             this.watchID = navigator.geolocation.watchPosition(function (position) {
-                app.info(Translator.Translate("Presnosť pozície") + ": " + position.coords.accuracy + "m");
+
+                var accu = position.coords.accuracy.toFixed(2);
+
+                app.info(Translator.Translate("Presnosť pozície") + ": " + accu + "m");
                 PositionService.lat = position.coords.latitude;
                 PositionService.lng = position.coords.longitude;
             }, function (err) {
@@ -44,7 +47,7 @@ var PositionService = {
         this.poolID = undefined;
             PositionService.callService();
             //try {
-            //    navigator.geolocation.getCurrentPosition(
+            //    app.geolocation.getCurrentPosition(
             //        function (position) {
             //                PositionService.lat = position.coords.latitude;
             //                PositionService.lng = position.coords.longitude;
@@ -91,10 +94,19 @@ var PositionService = {
                     Stand.CheckStandLeave();
                 } 
 
+                //ktory view sa pouzije? 
+                //var DataPackageDriver = "viewDataPackageDriverReservations";
+                var DataPackageDriver = "viewDataPackageDriver";
+                var snewdata = Globals.GetSetItem("DataPackageDriver");
+                if (snewdata && snewdata != "")
+                    DataPackageDriver = snewdata;
+
                 Service.callService("MobilePool", {
                     Id: s.transporterId,
                     Lat: posChanged ? PositionService.lat : 0,
                     Lng: posChanged ? PositionService.lng : 0,
+                    GUID_sysCompany: s.GUID_sysCompany,
+                    DataPackageDriver: DataPackageDriver,
                 },
                 function (d) { PositionService.startPool(); app.info(""); PositionService.refreshVersionData(d); },
                 function (d) { PositionService.startPool(); if (d.ErrorMessage) app.info(d.ErrorMessage); PositionService.refreshVersionData(d); });
@@ -112,11 +124,17 @@ var PositionService = {
         
         //mhp tu bude zmen, priuchadza viacerio checksumov ! 
         var checkSum_Orders = '';
+        var checkSum_Reservation = '';
         var checkSum_Messages = '';
         var checkSum_Transporter = '';
         var checkSum_User = '';
+        var checkSum_OrderMessages = '';
+
+        var needRefreshMinutes = true;
+
         app.log("call resfresh version");
 
+        var refreshed = false;
 
         if (!d.Items)
             return;
@@ -125,12 +143,20 @@ var PositionService = {
         checkSum_Messages = d.Items[1]["Column1"];
         checkSum_Transporter = d.Items[2]["Column1"];
 
+        if (d.Items.length > 3)
+            checkSum_OrderMessages = d.Items[3]["Column1"];
+
+        if (d.Items.length > 4)
+            checkSum_Reservation = d.Items[4]["Column1"];
+
+
         //app.setStatusBar('aa', 'bb', 'mess', 'P');
         
         app.setStatusBarOffer("None");
 
         //chcek offers
         if ((checkSum_Orders && checkSum_Orders != Service.ordersVer)) {
+            var refreshed = true;
             Service.ordersVer = checkSum_Orders;
             app.setStatusBarOffer("New");
             try
@@ -143,6 +169,7 @@ var PositionService = {
                 else {
                     app.playNew();
                 }
+                LocalNotification.schedule("orders", "Zmena v objednávkach");
             }
             catch (err) { //zahrame, aj ak bola chyba !
                 app.playNew();
@@ -151,6 +178,38 @@ var PositionService = {
             //MHP stacia orders a nepotrebujeme transporters ? 
             //app.refreshData(["orders", "transporters"]);
             app.refreshData(["orders"]);
+            needRefreshMinutes = false;
+        }
+
+        //orders messages = spravy k objednavkam
+        if ((checkSum_OrderMessages && checkSum_OrderMessages != Service.ordersmessagesVer)) {
+            Service.ordersmessagesVer = checkSum_OrderMessages;
+            //app.setStatusBarOffer("New");
+            try {
+                MediaInternal.playSoundInMedia("Message_New", 1, 0);
+                LocalNotification.schedule("orders", "Zmena v objednávkach");
+            }
+            catch (err) { //zahrame, aj ak bola chyba !
+            }
+
+            //co treba refresnut ? 
+            if (!refreshed) {
+                app.refreshData(["orders"]);
+                needRefreshMinutes = false;
+            }
+        };
+
+        //reservations 
+        app.setStatusBarOfferReservation("None");
+        if (checkSum_Reservation && checkSum_Reservation!="") {
+            Service.ordersReservationVer = checkSum_Reservation;
+            var hasNew = false;
+            var res = checkSum_Reservation.split(Globals.SplitString);
+            if (res && res.length == 2 && res[1] != "0") {
+                hasNew = true;
+            }
+            if(hasNew)
+                app.setStatusBarOfferReservation("New");
         }
 
         //messages 
@@ -165,7 +224,8 @@ var PositionService = {
             }
             if (hasNew) {
                 app.setStatusBarNewMessage();
-                MediaInternal.playSoundInMedia("Message_New",1,0);
+                MediaInternal.playSoundInMedia("Message_New", 1, 0);
+                LocalNotification.schedule("messages", "Nová správa");
             }
 
         }
@@ -176,5 +236,10 @@ var PositionService = {
         }
 
 
+        //poterbujeme zmenit casy na hlavnej obrazovke, tie, ktore robia countDown (MinuteRest ....) AKO ? 
+        if (needRefreshMinutes)
+        {
+            Tools.refreshOrderMinutecntd(true);
+        }
     }
 }

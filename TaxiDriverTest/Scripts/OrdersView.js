@@ -9,7 +9,7 @@ var OrdersView = function () {
 
     this.render = function () {
         this.el.html(OrdersView.template());
-        $("#taxiHeader").off(app.clickEvent, function () { app.refreshData(["orders", "transporters"]); });
+        $("#taxiHeader").off(app.clickEvent);
         $("#taxiHeader").on(app.clickEvent, function () { app.refreshData(["orders", "transporters"]); });
 
 
@@ -38,11 +38,15 @@ var OrdersView = function () {
         //        app.info("powermanagement Error: " + err)
         //    }
         //}
+
+        this.iscroll = new IScroll($('.scroll', self.el)[0], { hScrollbar: false, vScrollbar: false });
+
         return this;
     };
 
     this.onShow = function () {
         this.loadData();
+        LocalNotification.clear("messages");
     };
 
     this.loadData = function () {
@@ -75,10 +79,31 @@ var OrdersView = function () {
             $('#menu').show();
             Service.getOrders(function (orders) {
 
+                
 
                 $.each(orders.Items, function () {
                     this.FormatedDate = Service.formatJsonDate(this.Date);
                     this.ShowCancelbtn = true;
+                    this.ShowOrdNessCount = false;
+                    //nastavime premenne
+                    this.ShowOrderCustomerPhone = Globals.constants.ShowOrderCustomerPhone;
+                    this.ShowOrderEndAddress = Globals.constants.ShowOrderEndAddress;
+                    this.ShowOrderBack = false;
+                    this.ShowMinuteRest = false;
+                    //this.DisableOrderCancelOnReserved = false;
+                    this.MinuteRest = Tools.minuteDiffOrder(this);
+                    this.MinuteRestGui = "";
+
+                    //if (this.MinuteRest < 180 && this.MinuteRest > -180) {
+                    //    this.MinuteRestGui = this.MinuteRest.toString() + " min";
+                    //    this.ShowMinuteRest = true;
+                    //}
+
+                    
+                        this.MinuteRestGui = this.MinuteRest.toString() + " min";
+                        this.ShowMinuteRest = true;
+                    
+
                     if (this.Status == 'Cancel') {
                         this.StatusCancel = true;
                         this.ShowCancelbtn = false;
@@ -86,34 +111,47 @@ var OrdersView = function () {
                     if (this.Status == 'Offered')
                         this.StatusOfferGUI = true;
 
+                    if (this.Status == 'Waiting' || this.Status == 'Processing' || this.Status == 'Finish' || this.Status == 'Reserved')
+                        this.ShowOrderEndAddress = true;
+
+                    if (this.Status == 'Waiting' || this.Status == 'Processing' || this.Status == 'Reserved')
+                        this.ShowOrderBack = Globals.constants.ShowOrderBack;
+
                     if(this.Status=="Processing")
                         this.ShowCancelbtn = false;
+
+                    //spravy k objednavke
+                    if(this.ordmesscount && this.ordmesscount>0)
+                        this.ShowOrdNessCount = true;
+
+
+                    if (this.Status == 'Reserved')
+                        this.ShowCancelbtn = !Globals.constants.DisableOrderCancelOnReserved;
+
+                    //console.log(this);
+
                 });
 
-
-
                 $('.orders-list').html(OrdersView.liTemplate(orders.Items));
-                if (self.iscroll)
-                    self.iscroll.refresh();
-                else
-                    self.iscroll = new iScroll($('.scroll', self.el)[0], { hScrollbar: false, vScrollbar: false });
+                    
                 app.waiting(false);
 
-                $(".up").off(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Up"); });
+                $(".up").off(app.clickEvent);
                 $(".up").on(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Up"); });
 
-                $(".cancel").off(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Down"); });
+                $(".cancel").off(app.clickEvent);
                 $(".cancel").on(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Down"); });
 
 
-                $(".confirmCancel").off(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Down"); });
+                $(".confirmCancel").off(app.clickEvent);
                 $(".confirmCancel").on(app.clickEvent, function () { self.changeOfferComplex($(this).parent(), "Down"); });
 
-
-                $(".content").off(app.clickEvent, function () { self.detail($(this).parent()); });
+                $(".content").off(app.clickEvent);
                 $(".content").on(app.clickEvent, function () { self.detail($(this).parent()); });
 
                 $('.orders-list').show();
+
+                self.iscroll.refresh();
             });
         }
     };
@@ -138,7 +176,7 @@ var OrdersView = function () {
             if (sp && sp != "")
                 pToinput = sp;
         }
-        var content1 = "<input type=\"text\" placeholder=\"Payment\" name=\"PaymentTotal\" id=\"orderNewsDetailFormPaymentTotal\" value=\""+pToinput+"\"/><br/>";
+        var content1 = "<input type=\"text\" placeholder=\"Payment\" style=\"width:80%\" name=\"PaymentTotal\" id=\"orderNewsDetailFormPaymentTotal\" value=\""+pToinput+"\"/><br/>";
         var content = Translator.Translate("Cena celkovo:") + content1 + "<br/><button id=\"btnsetPayment\" " + scriptText + "  style=\"background-color:black;\" class=\"textnoicon\">" + Translator.Translate("Zadať") + "</button>";
         app.showNewsComplete(Translator.Translate("Platba"), "SetPayment", "", 100000, content);
         return;

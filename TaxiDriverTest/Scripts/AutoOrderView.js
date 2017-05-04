@@ -7,13 +7,12 @@ var AutoOrderView = function (store) {
     this.render = function () {
         this.el.html(AutoOrderView.template());
         var self = this;
-        $("#autoorderSave").off(app.clickEvent, function () { self.save(); });
+        $("#autoorderSave").off(app.clickEvent);
         $("#autoorderSave").on(app.clickEvent, function () { self.save(); });
 
-        //$("#AutoOrderToReserved").off(app.change, function () { alert('jjj'); });
+        //$("#AutoOrderToReserved").off(app.change);
         //$("#AutoOrderToReserved").on(app.change, function () { alert('jjj'); });
         //$("#AutoOrderToReserved").change(function () { alert('jjj1'); });
-
 
         return this;
     };

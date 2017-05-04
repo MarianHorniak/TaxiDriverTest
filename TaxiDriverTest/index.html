@@ -1,11 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>TAXI driver test DataStream</title>
+    <title>TAXI driver test</title>
     <meta charset="utf-8"/>
     <link href="css/styles.css" rel="stylesheet">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, height=device-height" />
 </head>
-<body onload="onLoad()">
+<body>
 <div class='waitingDiv'>&nbsp;</div>   
 <div id="taxiNewFull">
 <div id="taxiNews">
@@ -28,6 +29,7 @@
             <div id="taxiStatus">
                 <div class="None" id="taxiStatusInfo">I</div> 
                 <div class="None" id="taxiStatusOffers">O</div> 
+                <div class="None" data-route="history"id="taxiStatusOffersReservation">R</div> 
                 <div class="None" data-route="messages" id="taxiStatusMessages">S</div> 
                 <div class="None" data-route="stand" id="taxiStatusPark">P</div> 
             </div>
@@ -38,7 +40,7 @@
 <!--submenu--> 
 <div id="menu">
 <div class='submenu' id="divsubmenu" style="display:none;z-index:10000;">
-    <button data-route="map" class="icon ico_map">&nbsp;</button>
+    <button id="btnmenuMap" data-route="map" class="icon ico_map">&nbsp;</button>
     <button id="btnHistory"  data-route="history" class="textnoicon">História</button>
     <button id ="btnRecallMe" title="Recall me" class="icon ico_phone">&nbsp;</button>
     <button data-route="states" class="icon ico_stop">&nbsp;</button>
@@ -74,24 +76,55 @@
 
     <div class="content">
     {{#if this.StatusOfferGUI}}
+        
+        {{#if this.ShowMinuteRest}}
+              <label id="mes_{{this.GUID}}" style="background-color:black">{{this.MinuteRestGui}}</label>
+        {{/if}}       
+
              <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong> <br/>
-             {{this.StartCity}} {{this.StartAddress}}<br/>
-             {{this.EndCity}} {{this.EndAddress}}<br/>
-            {{this.Persons}} / {{this.SpecialConditions}}  
-            {{#if Globals.Orders_List_ShowCustomerPhone}}
-            / {{this.CustomerPhone}} 
+             {{this.StartCity}} {{this.StartAddress}} <br/>
+            
+
+            {{#if this.ShowOrderEndAddress}}
+                     {{this.EndCity}} {{this.EndAddress}} <br/>
             {{/if}}
+        
+            {{this.Persons}} / {{this.SpecialConditions}}  
+        
+            {{#if  this.ShowOrderCustomerPhone}}
+                  / {{this.CustomerPhone}} 
+            {{/if}}
+
             / {{this.CustomerName}} 
            
                 
 
     {{else}}
 
+           {{#if this.ShowMinuteRest}}
+               <label id="Label1" style="background-color:black">{{this.MinuteRestGui}}</label>
+           {{/if}}     
+
             <strong>{{this.FormatedDate}}</strong> {{this.StartCity}} {{this.StartAddress}}<br/>
-            {{this.EndCity}} {{this.EndAddress}}<br/>
+
+   
+
+            {{#if  this.ShowOrderEndAddress}}
+        
+                    {{#if this.ShowOrdNessCount}}
+                       <label style="background-color:black">  S: {{this.ordmesscount}} </label>
+                 {{/if}}
+                {{this.EndCity}} {{this.EndAddress}}<br/>
+           {{else}}
+                    {{#if this.ShowOrdNessCount}}
+                      <label style="background-color:black">  S: {{this.ordmesscount}} </label>
+                 {{/if}}
+            {{/if}}
+
+
             {{this.Persons}} / {{this.SpecialConditions}}  
-            {{#if Globals.Orders_List_ShowCustomerPhone}}
-            / {{this.CustomerPhone}} 
+            {{#if  this.ShowOrderCustomerPhone}}
+                 / {{this.CustomerPhone}} 
             {{/if}}
             / {{this.CustomerName}} - <strong>{{this.StatusTranslation}}</strong>
 
@@ -99,6 +132,7 @@
     </div>
 
     
+
 
     {{#if this.StatusCancel}}
         <div class="icon confirmCancel">&nbsp;</div>
@@ -145,20 +179,24 @@
     <button id="historyTitle" class="textHeaderTitle" disabled="disabled">História</button>
     <div style="position:absolute; left:200px; top:2px; right:0px;">
     <select id="selectHistory">
-        <option value="1h">1 hodina</option>
-        <option value="2h">2 hodiny</option>
-        <option value="24h">24 hodín</option>
-        <option value="My24h">Moje 24 hod.</option>
-        <option value="My1Month">Moje 1 mesiac</option>
-        <option value="Reservations">Rezervácie</option>
-        <option value="Disp24">Disp 24 hod.</option>
+        <option id="selectHistory1h"  value="1h">1 hodina</option>
+        <option id="selectHistory2h" value="2h">2 hodiny</option>
+        <option id="selectHistory24h" value="24h">24 hodín</option>
+        <option id="selectHistoryMy24h" value="My24h">Moje 24 hod.</option>
+        <option id="selectHistoryMy1Month" value="My1Month">Moje 1 mesiac</option>
+        <option id="selectHistoryReservations" value="Reservations">Rezervácie</option>
+        <option id="selectHistoryDisp24" value="Disp24">Disp 24 hod.</option>
+        <option id="selectHistoryMySum24h" value="MySum24">Sumár 24 hod.</option>
+        <option id="selectHistoryMySum16h" value="MySum16">Sumár 16 hod.</option>
+        <option id="selectHistoryMySum12h" value="MySum12">Sumár 12 hod.</option>
+        <option id="selectHistoryMySum8h" value="MySum8">Sumár 8 hod.</option>
 
-        <!--<option value="MyTodayTab">Moje dnes</option>-->
-        <!--<option value="MyYestTab">Moje včera</option>-->
+
+
     </select>
  </div>
 </div>
-<div class="scrollBottom"><div class='buttonlist ordersHistory-list'></div></div>
+<div class="scrollBottom"><div class='buttonlist ordersHistory-list'></div><div id="ordersHistory-listnoData"></div></div>
 </script>
 
 <script id="ordersHistory-li-tpl" type="text/x-handlebars-template">
@@ -188,6 +226,31 @@
         
 </script>
 
+ <script id="ordersHistorytabSum-li-tpl" type="text/x-handlebars-template">
+     
+     <table>
+         <tr style="background-color:lightyellow; color:black"><td>&nbsp;STATUS&nbsp;</td><td>&nbsp;POČET&nbsp;</td><td>&nbsp;SUMA&nbsp;</td></tr>
+     
+{{#.}} 
+         {{#if  this.isData}}
+            <tr style="text-align:right"  class="{{this.isOddCSS}}">
+                <td> {{this.StatusTranslation}} &nbsp; </td><td>  {{this.Pocet}}</td><td>  {{this.Suma}}</td>
+            </tr>
+         {{else}}
+             <tr style="background-color:lightyellow; color:black;text-align:right">
+                <td> {{this.StatusTranslation}} </td><td>  {{this.Pocet}}</td><td>  {{this.Suma}}</td>
+            </tr>
+          {{/if}}
+{{/.}}
+   
+
+
+          
+
+   </table>
+</script>
+
+
 <!-- Lists start -->
     <script id="lists-tpl" type="text/x-handlebars-template">
 <div class='header'><button id="listsBack" class="icon ico_back">&nbsp;</button>
@@ -197,6 +260,10 @@
         <option value="noselect">-----</option>
         <option value="listPlace">Place</option>
         <option value="listMessageTemplate">Správy</option>
+        <option value="listRestrictedStreet">Zak. ulice</option>
+        <option value="listRestrictedPolygons">Zak. polygóny</option>
+        <option value="listNastBody">Nástupištia</option>
+
     </select>
  </div>
 </div>
@@ -208,7 +275,7 @@
 {{#.}}
 <div data_Id="{{this.GUID}}" class="{{this.isOddCSS}}">
     <div>
-        <strong>{{this.Title}}</strong> 
+        aaa <strong>{{this.Title}}</strong> 
         {{#if this.Text1}}{{this.Text1}} {{/if}}
         {{#if this.Text2}}{{this.Text2}} {{/if}}
     </div>
@@ -222,25 +289,21 @@
 
 <!-- OrderDetail -->
 <script id="orderDetail-tpl" type="text/x-handlebars-template">
-    <div class='header'>
-        <!--<button id="orderDetailBack" class="icon ico_back">&nbsp;</button>-->
-        <!--<button id="orderCall" class="icon ico_phone">&nbsp;</button>-->
-    
-        <div id="orderDetailTabs" class="tabs scrollhoriz">
-            <button id="orderDetailBack" class="icon ico_back">&nbsp;</button>
-
+    <div class="header">
+        <!--<div id="orderDetailTabs">--> <!--class="tabs scrollhoriz"-->
+                <button id="orderDetailBack" class="icon ico_back">&nbsp;</button>
                 <button id="orderCall" class="icon ico_phone">&nbsp;</button>
-                <div id="orderTimeTab" class="selected">Čas</div>
-                <div id="orderDetailTab">Detail</div>
-                <div id="orderPaymentTab">Platba</div>
-                <div id="orderMapTab">Mapa</div>
-
-        </div>
-    
+                <button id="orderTimeTab" class="selected icon ico_time">&nbsp;</button>
+                <button id="orderDetailTab" class="icon ico_info">&nbsp;</button>
+                <button id="orderPaymentTab" class="icon ico_payment">&nbsp;</button>
+                <button id="orderMessagesTab" class="icon ico_message">&nbsp;</button>
+                <button id="orderMapTab" class="icon ico_map">&nbsp;</button>
+        <!--</div>-->
     </div>    
-
+    
     <div id="orderDetailContent" class="scrollBottom">
-        <div  id="orderDetailTime">
+        <div>
+            <div  id="orderDetailTime">
             <button id="orderDetailSave" class="icon texticon ico_submit">&nbsp;</button>
                <input type="hidden" id="OrderTimeToRealize" name="TimeToRealize"/>
               <div id="OrderTimeToRealizeRadio" class="radiolist">
@@ -256,29 +319,63 @@
                 <div data_value="90">1,5 hod</div>
                 <div data_value="120">2 hod</div>
                 <div data_value="240">4 hod</div>
+                  <hr />
+                <div  data_value="-3">-3 min</div>
+                <div  data_value="-5">-5 min</div>
+                <div  data_value="-7">-7 min</div>
+                <div  data_value="-10">-10 min</div>
+                <div  data_value="-15">-15 min</div>
+                <div  data_value="-30">-30 min</div>
+                <div  data_value="-60">-1 hod</div>
+
+
             </div>
             
         </div>
-        <div id="orderDetailForm" class="FullContent"></div>
-        <div id="orderDetailPayment" class="FullContent">
+            <div id="orderDetailForm" class="FullContent"></div>
+            <div id="orderDetailPayment" class="FullContent">
             <strong>Cena celkovo:</strong> <br/> 
             <input type="text" placeholder="Payment" name="PaymentTotal" id="orderDetailFormPaymentTotal" value="0"/>
             <button id ="btnorderDetailPaymentTotal" title="Potvrdiť"  class="icon texticon ico_submit">Potvrdiť</button> <br/> 
+        </div>
+            <div id="orderDetailMessages" class="FullContent">
+            
+            <input type="text" placeholder="správa..." name="MessageText" id="txtOrderMessageText" />
+            <select id="selectMessageType">   </select>
+            <button id ="btnorderDetailMessageNew" title="Potvrdiť"  class="icon texticon ico_submit">Poslať</button> <br/> 
+            <hr />
+            <div id="orderDetailMessagesList" class="buttonlist message-list"></div>
+        </div>
         </div>
         <div id="orderDetailMap"></div>
     </div>
 </script>
 
 <script id="orderDetailForm-tpl" type="text/x-handlebars-template">
+       <div class="GroupHeader">Odkiaľ</div>
        <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong> <br/>   
-       <strong>Odkiaľ:</strong> {{this.StartCity}} {{this.StartAddress}} <br/> 
+       <strong></strong> {{this.StartCity}} {{this.StartAddress}} <br/> 
+       <button id ="orderDetailNavigteStart" style="width:250px" class="icon texticon ico_submit" title="Navigovať">Navigovať</button><br/>
 
-        <strong>Kam:</strong> <br/> 
+    {{#if this.ShowOrderEndAddress}}
+        <div class="GroupHeader">Kam</div>
+        <!--<strong>Kam:</strong> <br/>--> 
         <input type="text" placeholder="EndCity" name="EndCity" id="orderDetailFormEndCity" value="{{this.EndCity}}"/>
         <input type="text" placeholder="EndAddress" name="EndAddress" id="orderDetailFormEndAddress" value="{{this.EndAddress}}"/>
-        <button id ="btnorderDetailFormChangeEndAddress" title="Zmeniť adresu" class="icon texticon ico_submit">Zmeniť cieľ</button> <br/> 
+        <button id ="orderDetailNavigteEnd" style="width:250px" class="icon texticon ico_submit" title="Navigovať">Navigovať</button>
+        <button id ="btnorderDetailFormChangeEndAddress" style="width:250px" title="Zmeniť adresu" class="icon texticon ico_submit">Zmeniť cieľ</button> 
+    {{/if}}
 
-     <strong>Kontakt:</strong> {{this.CustomerName}}  {{#if Globals.Orders_List_ShowCustomerPhone}}   {{this.CustomerPhone}}  {{/if}}     <br/>
+     {{#if this.ShowOrderBack}}
+        <button id ="btnorderDetailFormGiveBack" title="Zmeniť adresu" style="width:250px" class="icon texticon ico_submit">Vrátiť disp.</button> <br/> 
+    {{/if}}
+
+    <div class="GroupHeader">Info</div>
+     <strong>Kontakt:</strong> {{this.CustomerName}}  
+     {{#if this.ShowOrderCustomerPhone}}   
+            <br/><button id ="detailCustomerPhone" class="icon texticon ico_phone" title="Navigovať">{{this.CustomerPhone}}</button>
+     {{/if}}    
+     <br/>
      {{#if this.Persons}}
             <strong>Počet pasažierov:</strong> {{this.Persons}}   <br/>
      {{/if}}
@@ -390,6 +487,7 @@
 <!--<input id="messagenewType"  name="Typ" value="{{this.MessageType}}" type="text" placeholder="Typ správy" />-->
 <!--<input id="messagenewText" name="Text" value="{{this.MessageText}}" type="text"  placeholder="text"  />-->
     <textarea id="messagenewText" name="Text"  type="text"  placeholder="text" ></textarea>
+    <select id="idselectNewMessToDisp">   </select>
 <!--<input id="messagenewTimeToLive" name="TimeToLive" value="{{this.TimeToLiveMin}}" type="number" placeholder="live min." />-->
 {{#if this.ErrorMessage}}<div class="error">{{this.ErrorMessage}}</div>{{/if}}
 </script>
@@ -414,9 +512,9 @@
     {{#.}}
      
          {{#if this.FromMe}}  
-         <div id="{{this.GUID}}" class="Cancel" >
+         <div id="Div1" class="Cancel" >
          {{else}}
-         <div id="{{this.GUID}}" class="Cancel" style="margin-left:75px;">
+         <div id="Div2" class="Cancel" style="margin-left:75px;">
          {{/if}}
 
             <div class="icon cancel">&nbsp;</div>
@@ -437,7 +535,8 @@
     <button id="settingsSave" class="icon ico_submit transparent">&nbsp;</button>
     <button id="appExit" class="icon ico_end">&nbsp;</button>
 </div>
-<div id="settingsForm" class='scrollBottom'></div>
+<div class='scrollBottom'><div id="settingsForm"></div></div>
+
 </script>
 
 <!-- Settings detail-->
@@ -464,7 +563,7 @@
     <button id="settAll" class="textHeaderTitle" disabled="disabled">Nastavenia</button>
     <!--<button id="settingsallSave" class="icon texticon ico_submit">&nbsp;</button>-->
 </div>
-     <div id="settingsallForm" class="scrollBottom"></div>
+     <div class="scrollBottom"><div id="settingsallForm"></div></div>
 </script>
 
  <!-- Settings ALL detail -->
@@ -483,7 +582,7 @@
 </script>
 
 
-<script src="phonegap.js"></script>
+<script src="cordova.js"></script>
 <script src="lib/json2.js"></script>    
 <script src="lib/jquery-1.8.2.min.js"></script>
 <script src="lib/handlebars.js"></script>
@@ -503,7 +602,6 @@
 <script src="Scripts/Globals.js"></script>
 <script src="Scripts/Errors.js"></script>
 <script src="Scripts/Lists.js"></script>
-<script src="Scripts/main.js"></script>
 <script src="Scripts/Translator.js"></script>
 <script src="Scripts/NotificationLocal.js"></script>
 <script src="Scripts/MediaInternal.js"></script>
@@ -516,5 +614,9 @@
 <script src="Scripts/AutoOrderToDispView.js"></script>
 <script src="Scripts/ListView.js"></script>
 <script src="Scripts/Tools.js"></script>
+<script src="Scripts/LocalNotification.js"></script>
+<script src="Scripts/Navigator.js"></script>
+<script src="Scripts/main.js"></script>
+<script>onLoad()</script>
 </body>
 </html>

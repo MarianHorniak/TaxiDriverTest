@@ -7,7 +7,7 @@ var AutoOrderToDispView = function (store) {
     this.render = function () {
         this.el.html(AutoOrderToDispView.template());
         var self = this;
-        $("#autoordertodispSave").off(app.clickEvent, function () { self.save(); });
+        $("#autoordertodispSave").off(app.clickEvent);
         $("#autoordertodispSave").on(app.clickEvent, function () { self.save(); });
         return this;
     };

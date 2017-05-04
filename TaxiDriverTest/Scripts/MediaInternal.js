@@ -65,7 +65,12 @@
 
                     //toplay sound initialized ? 
                     if (toplay) {
-                        toplay.volume = Globals.Media_Volume;
+
+                        if (toplay.setVolume)
+                            toplay.setVolume(Globals.Media_Volume);
+                        else
+                            toplay.volume = Globals.Media_Volume;
+
                         toplay.play();
                     }
                 }

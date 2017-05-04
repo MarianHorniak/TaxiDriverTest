@@ -2,11 +2,13 @@
     currentPage: null,
     currentPageName: null,
     isDevice: false,
+    geolocation: null,
     userAgent:"",
     platform: "",
     clickEvent: "click",
     mediaNew : null,
-    mediaAlert : null,
+    mediaAlert: null,
+    inBackground: false,
     pages: {},
     showAlert: function (message, title) {
 
@@ -38,7 +40,7 @@
     },
 
     showNewsComplete: function (title, soundFile, color, hideinmilisec, content) {
-        if (!soundFile | soundFile == "") soundFile = MediaInternal.defaultNewsSoundfile; //"audio/sound_new.mp3";
+        if (!soundFile || soundFile == "") soundFile = MediaInternal.defaultNewsSoundfile; //"audio/sound_new.mp3";
         $("#taxiNewsContent").html(content);
         $("#taxiNewsTitle").html(title);
         $("#taxiNewFull").show(200);
@@ -88,11 +90,14 @@
     },
     playNew: function(){
         if (app.mediaNew) {
-            app.mediaNew.volume = Globals.Media_Volume;
+            if (app.mediaNew.setVolume)
+                app.mediaNew.setVolume(Globals.Media_Volume);
+            else
+                app.mediaNew.volume = Globals.Media_Volume;
+
             app.mediaNew.play();
         }
     },
-
     playSound: function (soundFile) {
         window.setTimeout(function () {
             if (soundFile) {
@@ -104,7 +109,12 @@
 
                 //toplay sound initialized ? 
                 if (toplay) {
-                    toplay.volume = Globals.Media_Volume;
+
+                    if (toplay.setVolume)
+                        toplay.setVolume(Globals.Media_Volume);
+                    else
+                        toplay.volume = Globals.Media_Volume;
+                    
                     toplay.play();
                 }
             }
@@ -186,8 +196,8 @@
         $('#unalarmButton').hide();
 
         try {
-            document.addEventListener('pause', function () { app.info("Pause"); }, false);
-            document.addEventListener('resume', function () { app.info("Resume"); }, false);
+            document.addEventListener('pause', function () { app.info("Pause"); self.inBackground = true; }, false);
+            document.addEventListener('resume', function () { app.info("Resume"); self.inBackground = false; }, false);
             document.addEventListener("offline", function () { app.info("Offline"); }, false);
             document.addEventListener("online", function () { app.info("Online"); }, false);
             document.addEventListener("unload", function () {
@@ -196,6 +206,7 @@
                             function () { app.info("powermanagement Release"); },
                             function () { app.info("powermanagement Error Release"); }
                     );
+                LocalNotification.clearAll();
             }, false);
             document.addEventListener("menubutton", function () { e.preventDefault(); app.settings(); }, false);
             document.addEventListener("backbutton", function (e) {
@@ -207,6 +218,35 @@
 
         } catch (err) {
             app.log(err);
+        }
+
+        try {
+            LocalNotification.registerPermission();
+            LocalNotification.hasPermission(function() {
+
+                cordova.plugins.notification.local.setDefaults({
+                    title: "Taxi driver",
+                    //icon: app.getAndroidPath() + 'img/cabs.png',
+                    //smallIcon: app.getAndroidPath() + 'img/cabs.png',
+                    //smallIcon: 'res://cordova',
+                    //sound: null, //ticha ...
+                });
+
+                cordova.plugins.notification.local.on("click", function (notification) {
+                    window.setTimeout(
+                        function () {
+                            switch (notification.id) {
+                                case "orders": app.route("orders"); break;
+                                case "messages": app.route("messages"); break;
+                                default: app.home(); break;
+                            }
+                        }, 100
+                    );
+                });
+            });
+        }
+        catch (err) {
+            app.log("Local Notification: " + err);
         }
 
         try {
@@ -347,6 +387,11 @@
         $("#taxiStatusOffers").addClass(offerClass);
     },
 
+    setStatusBarOfferReservation: function (offerClass) {
+        $("#taxiStatusOffersReservation").removeClass();
+        $("#taxiStatusOffersReservation").addClass(offerClass);
+    },
+
     setStatusBarNewMessage: function () {
         $("#taxiStatusMessages").removeClass("None");
         $("#taxiStatusMessages").addClass("New");
@@ -386,7 +431,7 @@
 
     getAndroidPath: function () {
         if (app.isDevice) {
-            var path = "/android_asset/www/";
+            var path = window.location.href.substring(0, window.location.href.lastIndexOf('/')) + "/";
             return path;
         }
         else return "";
@@ -394,9 +439,14 @@
 
     initialize: function () {
         app.log("app.initialize");
-        app.log("app.isDevice: " + this.isDevice);
+        
         var self = this;
         this.pages = {};
+
+        if (!app.geolocation) {
+            app.geolocation = navigator.geolocation; // cordova geolocation plugin
+        }
+
         this.registerEvents();
 
         Service.initialize(function () {
@@ -422,19 +472,27 @@
 };
 
 function onLoad() {
+    app.log("onLoad");
+    app.geolocation = false;
+
+    if (navigator.geolocation) {
+        app.geolocation = navigator.geolocation;
+    }
+
     app.userAgent = navigator.userAgent;
     app.isDevice = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
     app.platform = navigator.platform;
 
+    app.log("app.isDevice: " + app.isDevice);
 
     if (app.isDevice) {
         app.clickEvent = "tap";
-        document.addEventListener("deviceready", function () { app.initialize(); }, false);
+        document.addEventListener("deviceready", function () { app.log("event: deviceready"); app.initialize(); }, false);
+        app.log("document.addEventListener(deviceready)");
     } else {
         app.clickEvent = "click";
         app.initialize();
     }
-    
 }
 
 function showMenu() {

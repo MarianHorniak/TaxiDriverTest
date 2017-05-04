@@ -8,6 +8,9 @@ var StatesView = function (store) {
         var self = this;
         this.el.html(StatesView.template());
         $("#statesSave").click(function () { self.save(); });
+
+        self.iscroll = new IScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
+
         return this;
     };
 
@@ -24,8 +27,12 @@ var StatesView = function (store) {
             $("#TimeToFree").val(data.TimeToFree);
         if (data.HistoryAction)
             $("#HistoryAction").val(data.HistoryAction);
-        $("#HistoryAction").focus();
+
         $("#statesForm").show();
+
+        self.iscroll.refresh();
+
+        $("#HistoryAction").focus();
     };
             
     this.save = function () {
@@ -42,8 +49,6 @@ var StatesView = function (store) {
             function () {
                 //notify
                 NotificationLocal.Notify("stateschange", data, null, null);
-
-
                 app.home();
             },
             function (d) {

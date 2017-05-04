@@ -43,7 +43,7 @@
         ReceiverRole : "TaxiDispatcher",
 
         //Media
-        Media_Volume:0.5, 
+        Media_Volume:0.5,
 
         //Me
         myGUID : "",
@@ -59,11 +59,16 @@
 
         //CONSTANTS
         constants: {
-            Orders_List_ShowCustomerPhone: false,
+            ShowOrderCustomerPhone: false,
+            ShowOrderBack:false,
+            ShowOrderEndAddress: true,
+            UseVoiceSound: false,
+            DisableOrderCancelOnReserved: false,
             OrderDetail_Defauls_timeToRealize: 5,
             g_RefreshOrderSeconds: 60,
             Stand_Distancekm: 0.200,
-            Stand_OfferSec:180, //180
+            Stand_OfferSec: 180, //180
+            ordersMinuteRefreshInterval: 60,
         },
 
         GetPhoneSetting: function () {
@@ -73,9 +78,69 @@
                 $.each(listitems.Items, function () {
                     Globals.items.push(this);
                 });
+
+                //disable casti menu ! 
+                var DisabledMenus = Globals.GetSetItem("DisabledMenus");
+                if (DisabledMenus)
+                {
+                    var resArray = DisabledMenus.split(Globals.SplitString);
+                    if (resArray && resArray.length > 0)
+                    {
+                        for (var i = 0; i < resArray.length; i++) {
+                            if (resArray[i]) {
+                                try{
+                                    var els = $("#" + resArray[i]);
+                                    els.attr("disabled", "disabled");
+                                    els.hide();
+                                }
+                                catch (err) { }
+                            }
+                        }
+                    }
+                }
+
+                //este do premennych 
+                var sVal = Globals.GetSetItem("ShowOrderCustomerPhone");
+                if (sVal == "1") Globals.constants.ShowOrderCustomerPhone = true;
+
+                sVal = Globals.GetSetItem("ShowOrderEndAddress");
+                if (sVal == "0") Globals.constants.ShowOrderEndAddress = false;
+
+                sVal = Globals.GetSetItem("UseVoiceSound");
+                if (sVal == "1") Globals.constants.UseVoiceSound = true;
+
+                sVal = Globals.GetSetItem("ShowOrderBack");
+                if (sVal == "1") Globals.constants.ShowOrderBack = true
+
+                sVal = Globals.GetSetItem("DisableOrderCancelOnReserved");
+                if (sVal == "1") Globals.constants.DisableOrderCancelOnReserved = true
+
+
             });
 
 
+        },
+
+
+        HideHistory: function()
+        {
+
+            //disable casti menu ! 
+            var DisabledMenus = Globals.GetSetItem("DisabledMenus");
+            if (DisabledMenus) {
+                var resArray = DisabledMenus.split(Globals.SplitString);
+                if (resArray && resArray.length > 0) {
+                    for (var i = 0; i < resArray.length; i++) {
+                        if (resArray[i].indexOf('selectHistory') > -1) {
+                            var r = "#" + resArray[i];
+                            $(r).attr("disabled", "disabled");
+                            $(r).hide();
+                            $("#selectHistory option[id='"+resArray[i]+"']").remove();
+                        }
+                    }
+                }
+
+            }
         },
 
         //najde hodnotu setting value v zozname settingova
@@ -85,7 +150,8 @@
             if (!Globals.items) return ret;
             for (var i = 0, iLen = Globals.items.length; i < iLen; i++) {
 
-                if (Globals.items[i].Title == Title) return Globals.items[i].SettingValue;
+                if (Globals.items[i].Title == Title)
+                    return Globals.items[i].SettingValue;
             }
 
             return ret;

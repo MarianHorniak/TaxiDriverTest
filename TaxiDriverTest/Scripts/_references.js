@@ -27,6 +27,7 @@
 /// <reference path="AutoOrderToDispView.js" />
 /// <reference path="ListView.js" />
 /// <reference path="Tools.js" />
-
+/// <reference path="LocalNotification.js" />
+/// <reference path="Navigator.js" />
 
 

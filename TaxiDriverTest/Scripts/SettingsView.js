@@ -8,12 +8,13 @@ var SettingsView = function (messages) {
     this.render = function () {
         var self = this;
         this.el.html(SettingsView.template());
-        $("#settingsSave").off(app.clickEvent, function () { if (!$(this).hasClass("transparent")) self.save(); });
+        $("#settingsSave").off(app.clickEvent);
         $("#settingsSave").on(app.clickEvent, function () { if (!$(this).hasClass("transparent")) self.save(); });
 
-        $("#appExit").off(app.clickEvent, function () { app.end(function () { self.loadForm(); }); })
-        $("#appExit").on(app.clickEvent, function () { app.end(function () { self.loadForm(); }); })
+        $("#appExit").off(app.clickEvent);
+        $("#appExit").on(app.clickEvent, function () { app.end(function () { self.loadForm(); }); });
 
+        self.iscroll = new IScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
         return this;
     };
 
@@ -41,17 +42,27 @@ var SettingsView = function (messages) {
     };
     this.loadForm = function () {
         app.waiting();
-        var self =this, data = Service.getSettings();
-        if (Service.isAuthenticated) 
+        var self = this, data;
+        try{
+            data = Service.getSettings();
+        } catch (err) {
+            data = {};
+        }
+        if (Service.isAuthenticated) {
             Service.getTransporters(function (d) {
                 data.transportes = d.Items;
                 self.showForm(data);
             });
+        }
         else self.showForm(data);
     };
     this.showForm = function (data) {
+        app.waiting(false);
+        if (!data)
+        {
+            data = {};
+        }
             data.ErrorMessage = Service.connectionError;
-            app.waiting(false);
             $("#settingsForm").html(SettingsView.templateForm(data));
 
             if(Service.isComplet())
@@ -61,6 +72,8 @@ var SettingsView = function (messages) {
 
             $("#settingsForm").show();
             $("#settingsSave").removeClass("transparent");
+
+            this.iscroll.refresh();
     };
 
     this.initialize();

@@ -13,12 +13,14 @@
         app.hideNews();
 
 
-        $("#standBack").off(app.clickEvent, function () { app.home(); });
+        $("#standBack").off(app.clickEvent);
         $("#standBack").on(app.clickEvent,function () { app.home(); });
 
         //klik na header
-        $("#standHeader").off(app.clickEvent,function () { self.getData(); });
+        $("#standHeader").off(app.clickEvent);
         $("#standHeader").on(app.clickEvent,function () { self.getData(); });
+
+        self.iscroll = new IScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
 
         return this;
     };
@@ -49,19 +51,9 @@
         Stand.lastOffer = Date.now();
 
         $('.stand-list').html(StandView.liTemplate(standresult.Items));
-        if (self.iscroll)
-            self.iscroll.refresh();
-        else
-            self.iscroll = new iScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
-
 
         //klik na join stand
-        $(".forstandup").off(app.clickEvent,function (item) {
-            item.stopPropagation();
-            var data_id = item.currentTarget.getAttribute("data_id");
-            self.joinStand(data_id);
-        });
-
+        $(".forstandup").off(app.clickEvent);
         $(".forstandup").on(app.clickEvent,function (item) {
             item.stopPropagation();
             var data_id = item.currentTarget.getAttribute("data_id");
@@ -69,11 +61,13 @@
         });
 
         //klik na down
-        $(".forstanddown").off(app.clickEvent,function () { Stand.LeaveStand(Stand.ToHomeScreen()); });
+        $(".forstanddown").off(app.clickEvent);
         $(".forstanddown").on(app.clickEvent,function () { Stand.LeaveStand(Stand.ToHomeScreen()); });
 
         app.waiting(false);
         $('.stand-list').show();
+
+        self.iscroll.refresh();
     }
 
     this.upravData = function (standresult) {
@@ -113,7 +107,11 @@
 
             
             //nemoze sa prihlasit pre vzdialenost!!!
-            if (standresult.Items[i].Distancekm > Globals.constants.Stand_Distancekm) standresult.Items[i].CanStand = false;
+            var distance = Globals.constants.Stand_Distancekm;
+            if (standresult.Items[i].RadiusinMeter) //vyplneny radius 
+                distance = standresult.Items[i].RadiusinMeter / 1000;
+
+            if (standresult.Items[i].Distancekm > distance) standresult.Items[i].CanStand = false;
         }
 
 
@@ -134,10 +132,7 @@
                 self.renderStands(standresult);
             }
             );
-        
     }
-
-
 
     this.initialize();
 
@@ -168,8 +163,6 @@
         var self = this;
         app.log("Join stand:" + standGUID);
 
-        
-
         var s = Service.getSettings();
         Service.callService("TransporterJoinStand", {
             GUID_Transporter: s.transporterId,
@@ -190,15 +183,10 @@
                     },
 
         null
-
         );
 
         return false;
-
     }
-
-
-
 }
 
 var Stand = {
@@ -216,7 +204,6 @@ var Stand = {
         }
 
     },
-
 
     setIconFree: function ()
     {
@@ -259,6 +246,9 @@ var Stand = {
         var StandNear = "";
         var StandGuid = "";
 
+        var availbale = false;
+        //vyberiem z chache listu:
+
         var standresult = Lists.getListItems("Stand");
         for (var i = 0; i < standresult.Items.length; i++) {
             var lat = standresult.Items[i].Latitude;
@@ -276,8 +266,7 @@ var Stand = {
         var differenceSec = (Date.now() - Stand.lastOffer) / 1000;//1000;
         if (differenceSec < Globals.constants.Stand_OfferSec) return;
 
-        var availbale = false;
-        //vyberiem z chache listu: 
+ 
 
         if (Distanceminkm <= Globals.constants.Stand_Distancekm) availbale = true;
 

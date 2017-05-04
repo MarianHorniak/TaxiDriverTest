@@ -1,7 +1,10 @@
 ﻿var Service = {
     online: false,
     ordersVer: undefined,
+    ordersMinuteRefresh: Date.now(),
+    ordersReservationVer: undefined,
     messagesVer: undefined,
+    ordersmessagesVer: undefined,
     transporterVer: "",
     transporter: null,
     orders: null,
@@ -220,6 +223,13 @@
         });
     },
 
+    getMessagesToOrder: function (GUID_TransporterOrder, callback) {
+        var self = this;
+        this.callService("datamobile", { Id: "transporterordermessages", GUID_TransporterOrder: GUID_TransporterOrder }, function (messages) {
+            if (callback)
+                callback(messages);
+        });
+    },
 
     setOrderDescription: function (order) {
         if (!order.GUID)
@@ -248,7 +258,7 @@
 
 
     getHistoryOrders: function (viewName, callback) {
-        this.callService("datamobile", { Id: viewName, IdTransporter: this._settings.transporterId }, callback);
+        this.callService("datamobile", { Id: viewName, IdTransporter: this._settings.transporterId , GUID_sysUser_Driver : this._settings.userId}, callback);
     },
 
     getListItems: function (viewName, callback) {
@@ -299,6 +309,26 @@
         var content = Translator.Translate("Spustiť alarm?") +"<br/><button id=\"btnsetAlarm\" " + scriptText + "  style=\"background-color:black;\" class=\"textnoicon\">" + Translator.Translate("Spustiť") + "</button>";
         app.showNewsComplete(Translator.Translate("Alarm"), null, "", 10000, content);
         return;
+    },
+
+    orderBack: function () {
+        app.hideNews();
+        app.waiting();
+        var s = Service.getSettings();
+        Service.callService("TransporterOrderGiveBack", {
+            GUID_Transporter: s.transporterId,
+            GUID_sysUser_Driver: s.userId,
+            GUID_TransporterOrder: Service.orders.Current.GUID,
+            Latitude: PositionService.lat,
+            Longitude: PositionService.lng
+        },
+            function () {
+                app.home(true);
+            },
+            function (d) {
+                app.info(d.ErrorMessage);
+                app.home(true);
+            });
     },
 
     alarm: function () {
@@ -371,7 +401,7 @@
             });
     },
 
-    sendNewMessage: function (MessageType, MessageText, LifeTimeMinutes, isAnswer, needAnswer, SenderRole, ReceiverRole, GUID_sysUser_Sender, GUID_sysUser_Receiver, Latitude, Longitude) {
+    sendNewMessage: function (MessageType, MessageText, LifeTimeMinutes, isAnswer, needAnswer, SenderRole, ReceiverRole, GUID_sysUser_Sender, GUID_sysUser_Receiver, Latitude, Longitude, successDelegate, errorDelegate) {
         app.waiting();
         Service.callService("SendMessage", {
             MessageType: MessageType,
@@ -388,11 +418,17 @@
 
         },
             function () {
-                app.route("messages");
+                if (!successDelegate)
+                    app.route("messages");
+                else
+                    successDelegate();
             },
             function (d) {
                 app.info(d.ErrorMessage);
-                app.home(true);
+                if (!errorDelegate)
+                    app.home(true);
+                else
+                    errorDelegate();
             });
     },
 
