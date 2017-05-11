@@ -14,8 +14,6 @@
         $("#selectHistory").off("change");
         $("#selectHistory").on("change", function (e) { self.selectionChange(e); });
 
-        Globals.HideHistory();
-
         self.iscroll = new IScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
 
         return this;

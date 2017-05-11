@@ -47,7 +47,8 @@
 
         //Me
         myGUID : "",
-        myTicket : "",
+        myTicket: "",
+        isBoss: false,
 
         //LOG + tracer
         traceMessage : "",
@@ -79,26 +80,6 @@
                     Globals.items.push(this);
                 });
 
-                //disable casti menu ! 
-                var DisabledMenus = Globals.GetSetItem("DisabledMenus");
-                if (DisabledMenus)
-                {
-                    var resArray = DisabledMenus.split(Globals.SplitString);
-                    if (resArray && resArray.length > 0)
-                    {
-                        for (var i = 0; i < resArray.length; i++) {
-                            if (resArray[i]) {
-                                try{
-                                    var els = $("#" + resArray[i]);
-                                    els.attr("disabled", "disabled");
-                                    els.hide();
-                                }
-                                catch (err) { }
-                            }
-                        }
-                    }
-                }
-
                 //este do premennych 
                 var sVal = Globals.GetSetItem("ShowOrderCustomerPhone");
                 if (sVal == "1") Globals.constants.ShowOrderCustomerPhone = true;
@@ -110,20 +91,30 @@
                 if (sVal == "1") Globals.constants.UseVoiceSound = true;
 
                 sVal = Globals.GetSetItem("ShowOrderBack");
-                if (sVal == "1") Globals.constants.ShowOrderBack = true
+                if (sVal == "1") Globals.constants.ShowOrderBack = true;
 
                 sVal = Globals.GetSetItem("DisableOrderCancelOnReserved");
-                if (sVal == "1") Globals.constants.DisableOrderCancelOnReserved = true
+                if (sVal == "1") Globals.constants.DisableOrderCancelOnReserved = true;
 
+                //BossDrivers
+                Globals.isBoss = false;
+                var bd = Globals.GetSetItem("BossDrivers");
+                if (bd) {
+                    var s = Service.getSettings();
+                    var uId = s.userId;
+                    var bdArray = bd.toLowerCase().split(Globals.SplitString);
+                    Globals.isBoss =  bdArray && bdArray.length > 0 && bdArray.indexOf(s.userId.toLowerCase()) != -1;
+                }
+
+                //disable casti menu ! -- tiez po page.rener();
+                Globals.DisableMenus();
 
             });
-
-
         },
 
-
-        HideHistory: function()
-        {
+        DisableMenus: function () {
+            if (Globals.isBoss)
+                return;
 
             //disable casti menu ! 
             var DisabledMenus = Globals.GetSetItem("DisabledMenus");
@@ -131,15 +122,16 @@
                 var resArray = DisabledMenus.split(Globals.SplitString);
                 if (resArray && resArray.length > 0) {
                     for (var i = 0; i < resArray.length; i++) {
-                        if (resArray[i].indexOf('selectHistory') > -1) {
+                        try {
                             var r = "#" + resArray[i];
                             $(r).attr("disabled", "disabled");
                             $(r).hide();
-                            $("#selectHistory option[id='"+resArray[i]+"']").remove();
+                            if (resArray[i].indexOf('selectHistory') > -1)
+                                $("#selectHistory option[id='" + resArray[i] + "']").remove();
                         }
+                        catch (err) { }
                     }
                 }
-
             }
         },
 

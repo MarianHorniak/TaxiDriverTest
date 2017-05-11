@@ -88,6 +88,8 @@
             
         });
 
+        $('.lists-list').html(ListView.liTemplate(listitems.Items));
+
         app.waiting(false);
         $('.lists-list').show();
 

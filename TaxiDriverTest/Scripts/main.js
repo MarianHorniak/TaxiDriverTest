@@ -295,6 +295,7 @@
             this.pages[p] = page;
             $('body').append(page.el);
             page.render();
+            Globals.DisableMenus();
         }
         this.currentPageName = p;
         this.slidePage(page);
