@@ -24,12 +24,18 @@ var AutoOrderToDispView = function (store) {
         var self = this;
         app.waiting();
         $("#autoordertodispForm").html(AutoOrderToDispView.formTemplate(data));
-        Map.geocode({ 'latLng': new google.maps.LatLng(PositionService.lat, PositionService.lng) }, function (a) {
+        try{
+        MapUtility.geocode({ 'latLng': new google.maps.LatLng(PositionService.lat, PositionService.lng) }, function (a) {
             $("#AutoOrdertodispStartCity").val(a.City);
             $("#AutoOrdertodispStartAddress").val(a.Address);
             $("#autoordertodispForm").show();
             app.waiting(false);
         });
+        }
+        catch (err) {
+            $("#autoordertodispForm").show();
+            app.waiting(false);
+        }
     };
     
     this.save = function () {

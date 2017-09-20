@@ -6,19 +6,21 @@ var MapView = function (store) {
     };
 
     this.render = function () {
-        Map.initialize(this.el);
+        MapUtility.initialize(this.el);
         return this;
     };
 
     this.onShow = function () {
-        Map.getData();
-        Map.showPosition();
+       if(MapUtility.getData())
+           MapUtility.showPosition();
+       else
+           MapUtility.message("Mapy sa nedajú načítať");
     }
 
     this.initialize();
 }
 
-var Map = {
+var MapUtility = {
     date: null,
     marker: null,
     markers: [],
@@ -36,33 +38,39 @@ var Map = {
     initialize: function (el) {
         var header = $('<div class="header"><button data-route="orders" class="icon ico_back">&nbsp;</button></div>').appendTo(el);
         var sc = $('<div class="scrollBottom"/>').appendTo(header);
-        Map.mapDiv = $('<div id="mapDiv"/>').appendTo(sc);
+        MapUtility.mapDiv = $('<div id="mapDiv"/>').appendTo(sc);
         
 
-        Map.mapMessage = $('<div id="mapMessage">Waiting ...</div>').appendTo(sc);
-        Map.mapOut = $('<div id="mapOut"/>').appendTo(header);
-        Map.mapOut2 = $('<div id="mapOut2"/>').appendTo(header);
+        MapUtility.mapMessage = $('<div id="mapMessage">Waiting ...</div>').appendTo(sc);
+        MapUtility.mapOut = $('<div id="mapOut"/>').appendTo(header);
+        MapUtility.mapOut2 = $('<div id="mapOut2"/>').appendTo(header);
 
         //Service.callService()
-        if (Map.mess) {
-            Map.message(Map.mess, Map.messError);
+        if (MapUtility.mess) {
+            MapUtility.message(MapUtility.mess, MapUtility.messError);
         }
-        Map.mapDiv.css("display", "block");
-        Map.map = new google.maps.Map(Map.mapDiv[0], { zoom: 15, disableDefaultUI: true, mapTypeId: google.maps.MapTypeId.ROADMAP });
-        google.maps.event.trigger(Map.map, "resize");
+        MapUtility.mapDiv.css("display", "block");
+
+        if (MapUtility.apiIsOk) {
+            MapUtility.map = new google.maps.Map(MapUtility.mapDiv[0], { zoom: 15, disableDefaultUI: true, mapTypeId: google.maps.MapTypeId.ROADMAP });
+            google.maps.event.trigger(MapUtility.map, "resize");
+        }
     },
     getData: function () {
-        for (var i = 0; i < Map.markers.length; i++) {
-            Map.markers[i].setMap(null);
+        if (!MapUtility.apiIsOk)
+            return false;
+
+        for (var i = 0; i < MapUtility.markers.length; i++) {
+            MapUtility.markers[i].setMap(null);
         }
-        Map.markers = [];
+        MapUtility.markers = [];
         console.log("get map view data");
         var self = this;
         var s = Service.getSettings();
         Service.callService("datamobile", { Id: "viewWebClientTransporters" },
             function (result) {
-                Map.carCount = result.Items.length;
-                //Map.mapOut2.html(Translator.Translate("Počet") + ": " + result.Items.length);
+                MapUtility.carCount = result.Items.length;
+                //MapUtility.mapOut2.html(Translator.Translate("Počet") + ": " + result.Items.length);
                 self.datatransporters = result;
                 console.log("get map view data " + result.Items.length);
                 $.each(self.datatransporters.Items, function () {
@@ -78,37 +86,39 @@ var Map = {
                         position: new google.maps.LatLng(item.Latitude, item.Longitude),
                         title:item.Title,
                         clickable: false,
-                        map: Map.map
+                        map: MapUtility.map
                     });
 
                     //m.setTitle(item.Title);
                     //m.setIcon(app.getIconUrl(item, true));
 
-                    Map.markers.push(m);
+                    MapUtility.markers.push(m);
                 });
             }
          );
 
+        return true;
+
     },
     apiOK: function () {
-        Map.apiIsOk = true;
-        Map.geocoder = new google.maps.Geocoder();
+        MapUtility.apiIsOk = true;
+        MapUtility.geocoder = new google.maps.Geocoder();
     },
     showPosition: function () {
-        Map.message("Hľadám pozíciu ...");
+        MapUtility.message("Hľadám pozíciu ...");
         try {
-            app.geolocation.getCurrentPosition(Map.success, Map.error, { enableHighAccuracy: true }); //, { frequency: 2000 }
+            app.geolocation.getCurrentPosition(MapUtility.success, MapUtility.error, { enableHighAccuracy: true }); //, { frequency: 2000 }
         }
         catch (err) {
-            Map.message(err.message, true);
+            MapUtility.message(err.message, true);
         }
     },
     success: function (position) {
         var self = this;
-        Map.date = new Date().toTimeString();
-        Map.message("Pozícia " + Map.date);
+        MapUtility.date = new Date().toTimeString();
+        MapUtility.message("Pozícia " + MapUtility.date);
         var poc = "";
-        if (Map.carCount && Map.carCount > 0) poc = Translator.Translate('Počet') + ': ' + Map.carCount;
+        if (MapUtility.carCount && MapUtility.carCount > 0) poc = Translator.Translate('Počet') + ': ' + MapUtility.carCount;
         var lat = position.coords.latitude.toFixed(2);
         var lng = position.coords.longitude.toFixed(2);
         var accu = position.coords.accuracy.toFixed(2);
@@ -119,10 +129,10 @@ var Map = {
         poc + 
         '<br />';
         var ddop = "";
-        Map.geocode({ 'latLng': new google.maps.LatLng(position.coords.latitude, position.coords.longitude) }, function (a) {
+        MapUtility.geocode({ 'latLng': new google.maps.LatLng(position.coords.latitude, position.coords.longitude) }, function (a) {
             ddop = Translator.Translate('Adresa')+': ' + a.City + ' ' + a.Address;
-            Map.mapOut.html(d + ddop);
-            Map.setMap(position);
+            MapUtility.mapOut.html(d + ddop);
+            MapUtility.setMap(position);
             PositionService.lat = position.coords.latitude;
             PositionService.lng = position.coords.longitude;
 
@@ -133,48 +143,48 @@ var Map = {
        //'Heading: ' + position.coords.heading + '<br />' +
        //'Speed: ' + Math.ceil(position.coords.speed * 3.6) + ' km/h<br />';// +
         //'Timestamp: ' + new Date(position.timestamp) + '<br />';
-        //Map.mapOut.html(d + ddop);
-        //Map.setMap(position);
+        //MapUtility.mapOut.html(d + ddop);
+        //MapUtility.setMap(position);
         //PositionService.lat = position.coords.latitude;
         //PositionService.lng = position.coords.longitude;
     },
     error: function (err) {
-        Map.message("Error: " + err.message, true);
+        MapUtility.message("Error: " + err.message, true);
     },
     message: function (t, err) {
-        if (Map.mapMessage) {
-            Map.mapMessage.html(t);
-            Map.mapMessage.css("color", err ? "red" : "black");
+        if (MapUtility.mapMessage) {
+            MapUtility.mapMessage.html(t);
+            MapUtility.mapMessage.css("color", err ? "red" : "black");
         }
         else {
-            Map.mess = t;
-            Map.messError = err;
+            MapUtility.mess = t;
+            MapUtility.messError = err;
         }
     },
     setMap: function (position) {
         try {
-            if (Map.apiIsOk) {
+            if (MapUtility.apiIsOk) {
 
                 console.log("point set");
-                Map.point = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                if (!Map.marker) {
-                    Map.marker = new google.maps.Marker({
+                MapUtility.point = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                if (!MapUtility.marker) {
+                    MapUtility.marker = new google.maps.Marker({
                         icon: { url: "img/cabs.png" },
                         clickable: false,
-                        map: Map.map
+                        map: MapUtility.map
                     });
                 }
-                Map.map.setCenter(Map.point);
-                Map.marker.setPosition(Map.point);
+                MapUtility.map.setCenter(MapUtility.point);
+                MapUtility.marker.setPosition(MapUtility.point);
                 
 
             }
             else {
-                Map.message("Mapy sú nedostupné", true);
+                MapUtility.message("Mapy sú nedostupné", true);
             }
         }
         catch (err) {
-            Map.message(err.message, true);
+            MapUtility.message(err.message, true);
         }
     },
     geocode: function (props, postback) {

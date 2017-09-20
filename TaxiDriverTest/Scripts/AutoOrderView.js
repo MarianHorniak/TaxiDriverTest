@@ -14,6 +14,8 @@ var AutoOrderView = function (store) {
         //$("#AutoOrderToReserved").on(app.change, function () { alert('jjj'); });
         //$("#AutoOrderToReserved").change(function () { alert('jjj1'); });
 
+        //self.iscroll = new IScroll($('.scrollBottom', self.el)[0], { hScrollbar: false, vScrollbar: false });
+
         return this;
     };
 
@@ -35,15 +37,22 @@ var AutoOrderView = function (store) {
         $("#AutoOrderToReserved").change(function () {
             self.FromAddress();
         });
-        Map.geocode({ 'latLng': new google.maps.LatLng(PositionService.lat, PositionService.lng) }, function (a) {
+        try{
+            MapUtility.geocode({ 'latLng': new google.maps.LatLng(PositionService.lat, PositionService.lng) }, function (a) {
+                $("#AutoOrderTimeToRealize").val(Globals.constants.OrderDetail_Defauls_timeToRealize);
+                $("#AutoOrderStartCity").val(a.City);
+                $("#AutoOrderStartAddress").val(a.Address);
+                $("#AutoOrderEndCity").val(a.City);
+                $("#AutoOrderToReserved").val(false);
+                $("#autoorderForm").show();
+                app.waiting(false);
+            });
+        }
+        catch (err) {
             $("#AutoOrderTimeToRealize").val(Globals.constants.OrderDetail_Defauls_timeToRealize);
-            $("#AutoOrderStartCity").val(a.City);
-            $("#AutoOrderStartAddress").val(a.Address);
-            $("#AutoOrderEndCity").val(a.City);
-            $("#AutoOrderToReserved").val(false);
             $("#autoorderForm").show();
             app.waiting(false);
-        });
+        }
     };
     
     this.save = function () {

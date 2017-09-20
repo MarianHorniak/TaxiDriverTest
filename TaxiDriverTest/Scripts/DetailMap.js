@@ -14,7 +14,7 @@
     },
     setMap: function (lat, lng, tlat, tlng) {
         //try {
-        if (Map.apiIsOk) {
+        if (MapUtility.apiIsOk) {
             DetailMap.point = new google.maps.LatLng(lat, lng);
 
             //icon: { url: "http://maps.gstatic.com/mapfiles/ms2/micons/man.png" },
