@@ -1,27 +1,19 @@
 ﻿var MediaInternal =
     {
 
-        defaultNewsSoundfile:"audio/sound_new.mp3",
+        defaultNewsSoundfile: "audio/sound_new.mp3",
 
-        //getNewsSoundFile: function (NewsTitle) {
-
-        //    var soundFile = MediaInternal.defaultNewsSoundfile; // "audio/sound_new.mp3";
-        //    var test = "audio/" + Globals.language + "/" + NewsTitle + ".mp3";
-        //    var res = $.ajax(test, { async: false });
-        //    if (res.statusText == "OK") soundFile = test;
-        //    return soundFile;
-        //},
-
-
-        //getSoundFileFromAlias : function (soundFileAlias)
-        //{
-        //    var realSoundFile = Globals.soundItems[soundFileAlias];
-        //    return realSoundFile;
-        //},
+        SOUND_TYPE : {
+            Order_Change: { value: 0, filename: "sound_order.mp3", haslocalization: true },
+            Order_Broadcast: { value: 1, filename: "sound_orderbroadcast.mp3", haslocalization: true },
+            Message_New: { value: 2, filename: "sound_message.mp3", haslocalization: true },
+            SetPayment: { value: 3, filename: "SetPayment.mp3", haslocalization: true },
+            StandAvailable: { value: 4, filename: "StandAvailable.mp3", haslocalization: true },
+            StandLeave: { value: 5, filename: "StandLeave.mp3", haslocalization: true }
+        },
 
         ///sounfilealias - alias suboru alebo priamo subor !
-        playSoundInMedia: function (soundFile, isAlias, isLocalized)
-        {
+        playSoundInMedia: function (soundFile, isAlias, isLocalized) {
 
 
             //no file ? 
@@ -34,8 +26,7 @@
             var realSoundFile = MediaInternal.defaultNewsSoundfile;
 
             //ak je to alias, tak ho prekodujeme
-            if (isAlias && isAlias == 1)
-            {
+            if (isAlias && isAlias == 1) {
                 realSoundFile = Globals.soundItems[soundFile];
             }
             if (isLocalized && isLocalized == 1) {
@@ -72,9 +63,24 @@
                             toplay.volume = Globals.Media_Volume;
 
                         toplay.play();
+                        
                     }
                 }
             }, 1);
 
+        },
+
+        mediaError: function (e) {
+            app.log('mediaError', e);
+        },
+
+        mediaStatus: function (status) {
+            app.log('mediaStatus '+status);
+            if (status === Media.MEDIA_STOPPED) {
+               // media.seekTo(0);
+               // media.play();
+            }
         }
+
     }
+    

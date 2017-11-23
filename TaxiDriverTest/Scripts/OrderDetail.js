@@ -245,6 +245,11 @@
             this.order.ShowOrderCustomerPhone = Globals.constants.ShowOrderCustomerPhone;
             this.order.ShowOrderEndAddress = Globals.constants.ShowOrderEndAddress;
 
+            this.order.DisableOrderChangeEndAddress = false;
+            if(this.order.EndAddress && this.order.EndAddress!="" && Globals.constants.DisableOrderChangeEndAddress)
+                this.order.DisableOrderChangeEndAddress = true;
+
+
             $("#orderDetailForm").html(OrderDetail.detailTemplate(this.order));
 
             $("#btnorderDetailFormChangeEndAddress").off(app.clickEvent);

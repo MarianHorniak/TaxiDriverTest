@@ -65,11 +65,14 @@
             ShowOrderEndAddress: true,
             UseVoiceSound: false,
             DisableOrderCancelOnReserved: false,
+            DisableOrderCancelGlobal: false,
+            DisableOrderChangeEndAddress:false,
             OrderDetail_Defauls_timeToRealize: 5,
             g_RefreshOrderSeconds: 60,
             Stand_Distancekm: 0.200,
             Stand_OfferSec: 180, //180
             ordersMinuteRefreshInterval: 60,
+            DisableMenuOnBreak: false
         },
 
         GetPhoneSetting: function () {
@@ -95,6 +98,17 @@
 
                 sVal = Globals.GetSetItem("DisableOrderCancelOnReserved");
                 if (sVal == "1") Globals.constants.DisableOrderCancelOnReserved = true;
+
+                sVal = Globals.GetSetItem("DisableMenuOnBreak");
+                if (sVal == "1") Globals.constants.DisableMenuOnBreak = true;
+
+                sVal = Globals.GetSetItem("DisableOrderCancelGlobal");
+                if (sVal && sVal == "1") Globals.constants.DisableOrderCancelGlobal = true;
+
+                sVal = Globals.GetSetItem("DisableOrderChangeEndAddress");
+                if (sVal && sVal == "1") Globals.constants.DisableOrderChangeEndAddress = true;
+
+
 
                 //BossDrivers
                 Globals.isBoss = false;

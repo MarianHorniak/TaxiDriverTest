@@ -47,6 +47,10 @@ body
     height: 50px;
 }
 
+#taxiStatusInfo.Break {
+    background-color:blue;
+}
+
 #taxiStatusInfo.Free {
     background-color:green;
 }
@@ -332,6 +336,14 @@ button
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANdSURBVHhe7Zk/clMxEMZtTsAMRSpowriBK0BvSkoOwDHIFWg4QzrKHCB1Smgy0JgmVFCFzubbZB8jy/uk1Z9n6YX9zXwjKd7VW62lRX4sDMMwDMMwDMMwDMMwjDmz5LYKu92Oe+Msl1UfeXSqRa9JVio9JrfrhLn0krxH3HbP1F+IltkkrBeqJKyXb/8YzGaH9VLDiqI4xs7q7V/K7GhaHcPWCZxdwnyOncCpa9gVRJkdFbhFu4aCwG5DjS+X7Xb7Bc3dlympOVJQvrCIG7RBYLNBI/qT8PkF2iD8nBUkzjGoC6TAHL3HYm7RBuGkiP5QEJ6f7CT/PTVHCsoXFnSONggveg35vpodSvPv+YXUFCkgSVgU1ZcgsNk7mhhf0t9D8Lx7z9KoGVIwI1phcb/QBoHNcDQ1R1FVtyQ1RQpoRNp6tOZkjMJ2qrolqQukwHzxDgrCyQgCm6S65aqEKre+1CBg/w0XzlMeJgP/r/B/ycNkSi67xRfXnG8MAb+B328eJgG/n/B/y8MscmIeKEpYwYOvseiP3FeD5/2B3wd0r+//MjMoYSVCHYpeG1xK6pavXIpqWMmDBzDHBrvmKQ9Hgd132D3nYTGYi3tpFB3J3Idm8gRa3XfbUVz0KWm5icOuuYRvdHcRsHsM+wseNmPq1zshzpCEV9xXAfvTWknDPNxrBAWQIPqZFL2cSrBf9g3fVQ5Vi5A2CNipCv0Y8Ke72Gt0i64XmIN7eqoeSQrAlQQWG61bsAleauF/ApvPPMxiLL4Yx65h0brFu+edImkvYHPOw4cBFuRKW7eG+nR2NwpA862B8KygukEKbhAWRy8Hg8CGbv6u3xUUBD70Gsj1CaobpOAGcSKCcEJ9X9VLR0CJ9X0P1BVSgCzV0UJz8D6fFfUnMMcnNJL/P3WFFCCkqluwGfsfo0Gao0nPCb6ursGk9zCMo/ct2Kh+VMPuBnYnPBSBzQ/YPOPhAfiMe/lUTdiAn7heqJGwlr8lZ4klLJFJjiTR27GscRyJ/6KG1UoWYUcykeoJq7G7aEfU3BU16XqH9Zi07hLmJ6m33VY9kpIjqU1M6jNqJnySr25sQUPgsc9TiCWv9u5skjDCt6m9sKk4WsLmkpAYk63CTdpDSZZhGIZhGIZhGIYBFou/Iev/46rVvVQAAAAASUVORK5CYIKQVYX+wN2bz+f7qH3soviuKxQJxOYwH1KdlMKN+ia0JtgqikW0ItiqikX0sQ4bNeKCSUQXRYRkVEgy6AgbomiDE8wVaWjRJt6TmJQMFabuMyQFb+XVlQ0o7XjV8TpUiScdnb0IRrjnSA+sLToTbCyCVNHaKGzRVkUsRVEURVEURVEUBUwm/wAMsgKjVsgL+wAAAABJRU5ErkJggg==');
 }
 
+.buttonlist div > div.specialInfo {
+    width:100px;
+    height:56px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
 .buttonlist div > div.cancel > div.fromme {
     left:40px;
 }
@@ -392,7 +404,7 @@ button
 .buttonlist div.Offered {
     opacity: 1;
     font-size: x-large;
-    height: 120px;
+    /*height: 120px;*/
 }
 
 .buttonlist div.Reserved
@@ -528,6 +540,11 @@ h2
 	bottom: 0px;
 	left: 0px;
 	overflow: hidden;
+    text-align:center;
+    
+}
+.scrollBottom > div, .scrollBottom > form{
+    text-align:left;
 }
 
 .input.Mess {
@@ -598,7 +615,7 @@ h2
     background-color:#333;
 }
 
-#unbreakButton {
+#unbreakButton, #unbreakButton2 {
     display:none;
     margin-top: 100px;
     height:65px;

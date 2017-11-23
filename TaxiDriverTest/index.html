@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>TAXI driver test </title>
+    <title>TAXI driver test</title>
     <meta charset="utf-8"/>
     <link href="css/styles.css" rel="stylesheet">
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, height=device-height" />
@@ -71,30 +71,29 @@
 <div id="{{this.GUID}}" class="{{this.Status}} {{this.StatusDescription}}" data_GUID_Offer="{{this.GUID_Offer}}" data_StatusOffer="{{this.StatusOffer}}" data_Id="{{this.GUID}}" data_Status="{{this.Status}}">
 
     {{#if this.ShowCancelbtn}}
-    <div class="icon cancel">&nbsp;</div>
+        <div class="icon cancel">&nbsp;</div>
     {{/if}}
+
 
     <div class="content">
     {{#if this.StatusOfferGUI}}
         
         {{#if this.ShowMinuteRest}}
-              <label id="mes_{{this.GUID}}" style="background-color:black">{{this.MinuteRestGui}}</label>
+              <span id="mes_{{this.GUID}}" style="background-color:black">{{this.MinuteRestGui}}</span>
         {{/if}}       
 
              <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong> <br/>
-             {{this.StartCity}} {{this.StartAddress}} <br/>
+             <span  style="background-color:black">●</span>{{this.StartCity}} {{this.StartAddress}} <br/>
             
 
             {{#if this.ShowOrderEndAddress}}
-                     {{this.EndCity}} {{this.EndAddress}} <br/>
+                   <span  style="background-color:black">●</span>{{this.EndCity}} {{this.EndAddress}}<br/>
             {{/if}}
         
-            {{this.Persons}} / {{this.SpecialConditions}}  
-        
+           <span  style="background-color:black">●</span>{{this.Persons}} / {{this.SpecialConditions}}  
             {{#if  this.ShowOrderCustomerPhone}}
                   / {{this.CustomerPhone}} 
             {{/if}}
-
             / {{this.CustomerName}} 
            
                 
@@ -102,31 +101,26 @@
     {{else}}
 
            {{#if this.ShowMinuteRest}}
-               <label id="mes_{{this.GUID}}" style="background-color:black">{{this.MinuteRestGui}}</label>
+               <span id="mes_{{this.GUID}}" style="background-color:black">{{this.MinuteRestGui}}</span>
            {{/if}}     
 
-            <strong>{{this.FormatedDate}}</strong> {{this.StartCity}} {{this.StartAddress}}<br/>
-
-   
+            <strong>{{this.FormatedDate}}</strong> <br />
+            <span  style="background-color:black">●</span>{{this.StartCity}} {{this.StartAddress}}<br/>
 
             {{#if  this.ShowOrderEndAddress}}
-        
-                    {{#if this.ShowOrdNessCount}}
-                       <label style="background-color:black">  S: {{this.ordmesscount}} </label>
-                 {{/if}}
-                {{this.EndCity}} {{this.EndAddress}}<br/>
-           {{else}}
-                    {{#if this.ShowOrdNessCount}}
-                      <label style="background-color:black">  S: {{this.ordmesscount}} </label>
-                 {{/if}}
+                <span  style="background-color:black">●</span>{{this.EndCity}} {{this.EndAddress}}<br/>
             {{/if}}
 
 
-            {{this.Persons}} / {{this.SpecialConditions}}  
+            <span  style="background-color:black">●</span>{{this.Persons}} / {{this.SpecialConditions}}  
             {{#if  this.ShowOrderCustomerPhone}}
                  / {{this.CustomerPhone}} 
             {{/if}}
-            / {{this.CustomerName}} - <strong>{{this.StatusTranslation}}</strong>
+            / {{this.CustomerName}} <br />
+            
+           
+            <span  style="background-color:black">●</span><strong>{{this.StatusTranslation}}</strong>
+            {{#if this.ShowOrdNessCount}}  <span style="background-color:black">  S: {{this.ordmesscount}} </span>    {{/if}}
 
      {{/if}}
     </div>
@@ -139,6 +133,9 @@
     {{else}}
         <div class="icon up">&nbsp;</div>
     {{/if}}
+
+
+
  </div>
 {{/.}}
 </script>
@@ -355,25 +352,29 @@
        <div class="GroupHeader">Odkiaľ</div>
        <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong> <br/>   
        <strong></strong> {{this.StartCity}} {{this.StartAddress}} <br/> 
-       <button id ="orderDetailNavigteStart" style="width:250px" class="icon texticon ico_submit" title="Navigovať">Navigovať</button><br/>
+       <button id ="orderDetailNavigteStart" style="width:250px" class="icon texticon ico_submit" title="Navigovať na štart">Navigovať</button><br/>
 
     {{#if this.ShowOrderEndAddress}}
         <div class="GroupHeader">Kam</div>
         <!--<strong>Kam:</strong> <br/>--> 
         <input type="text" placeholder="EndCity" name="EndCity" id="orderDetailFormEndCity" value="{{this.EndCity}}"/>
         <input type="text" placeholder="EndAddress" name="EndAddress" id="orderDetailFormEndAddress" value="{{this.EndAddress}}"/>
-        <button id ="orderDetailNavigteEnd" style="width:250px" class="icon texticon ico_submit" title="Navigovať">Navigovať</button>
-        <button id ="btnorderDetailFormChangeEndAddress" style="width:250px" title="Zmeniť adresu" class="icon texticon ico_submit">Zmeniť cieľ</button> 
+        <button id ="orderDetailNavigteEnd" style="width:250px" class="icon texticon ico_submit" title="Navigovať na cieĺ">Navigovať</button>
+        {{#if this.DisableOrderChangeEndAddress}}
+            
+       {{else}}
+           <button id ="btnorderDetailFormChangeEndAddress" style="width:250px" title="Zmeniť adresu cieľa" class="icon texticon ico_submit">Zmeniť cieľ</button> 
+       {{/if}}
     {{/if}}
 
      {{#if this.ShowOrderBack}}
-        <button id ="btnorderDetailFormGiveBack" title="Zmeniť adresu" style="width:250px" class="icon texticon ico_submit">Vrátiť disp.</button> <br/> 
+        <button id ="btnorderDetailFormGiveBack" title="Vrátiť na dispečing" style="width:250px" class="icon texticon ico_submit">Vrátiť disp.</button> <br/> 
     {{/if}}
 
     <div class="GroupHeader">Info</div>
      <strong>Kontakt:</strong> {{this.CustomerName}}  
      {{#if this.ShowOrderCustomerPhone}}   
-            <br/><button id ="detailCustomerPhone" class="icon texticon ico_phone" title="Navigovať">{{this.CustomerPhone}}</button>
+            <br/><button id ="detailCustomerPhone" class="icon texticon ico_phone" title="Zavolať zákazníkovi">{{this.CustomerPhone}}</button>
      {{/if}}    
      <br/>
      {{#if this.Persons}}
@@ -396,7 +397,7 @@
     <button id="statesTitle" class="textHeaderTitle" disabled="disabled">Prerušenia</button>
     <button id="statesSave" class="icon texticon ico_submit">&nbsp;</button>
 </div>
-<div class="scrollBottom"><form id="statesForm"></form></div>
+<div class="scrollBottom"><form id="statesForm"></form><button id="unbreakButton2" class="ico_submit">Ukončiť prestávku</button></div>
 </script>
 
 <script id="statesForm-template" type="text/x-handlebars-template">

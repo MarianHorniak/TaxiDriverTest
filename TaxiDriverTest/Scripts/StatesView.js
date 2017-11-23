@@ -20,19 +20,34 @@ var StatesView = function (store) {
 
     this.showForm = function (data) {
         var self = this;
+        
+
+        $('#unbreakButton2').hide();
+        $("#statesForm").hide();
+
         app.waiting(false);
-        $("#statesForm").html(StatesView.formTemplate(data));
 
-        if (data.TimeToFree)
-            $("#TimeToFree").val(data.TimeToFree);
-        if (data.HistoryAction)
-            $("#HistoryAction").val(data.HistoryAction);
+        if (!Globals.constants.DisableMenuOnBreak && Service.transporter.Status == "Break") {
+            $('#unbreakButton2').show();
+            $('#statesSave').hide();
+            app.waiting(false);
+        }
+        else {
 
-        $("#statesForm").show();
+            $("#statesForm").html(StatesView.formTemplate(data));
 
-        self.iscroll.refresh();
+            if (data.TimeToFree)
+                $("#TimeToFree").val(data.TimeToFree);
+            if (data.HistoryAction)
+                $("#HistoryAction").val(data.HistoryAction);
 
-        $("#HistoryAction").focus();
+            $("#statesForm").show();
+            $('#statesSave').show();
+
+            self.iscroll.refresh();
+
+            $("#HistoryAction").focus();
+        }
     };
             
     this.save = function () {

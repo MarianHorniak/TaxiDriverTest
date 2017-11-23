@@ -2,8 +2,8 @@
 <widget xmlns       = "http://www.w3.org/ns/widgets"
         xmlns:gap   = "http://phonegap.com/ns/1.0"
         id          = "sk.datastream.taxidrivertest"
-        versionCode = "508"
-        version     = "1.5.08">
+        versionCode = "516"
+        version     = "1.5.16">
 
   <name>TAXI Driver test</name>
 
@@ -24,7 +24,7 @@
 
   <preference name="load-url-timeout" value="60000" />
   <preference name="phonegap-version" value="cli-6.5.0" />
-  <preference name="DisallowOverscroll" value="true" />
+  
   <preference name="exit-on-suspend" value="false" />
   <preference name="KeepRunning " value="true" />
   <preference name="Fullscreen" value="true" />

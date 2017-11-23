@@ -6,45 +6,62 @@ var PositionService = {
     _lng: 0,
     poolID: undefined,
     watchID: undefined,
+    
+    startPool: function () {
+        if (PositionService.poolID)
+            clearTimeout(PositionService.poolID);
+        PositionService.poolID = setTimeout(PositionService.pool, 6000);
+        if (!PositionService.watchID)
+            PositionService.startWatch();
+    },
+    stopPool: function () {
+        if (this.poolID)
+            clearTimeout(this.poolID);
+        this.poolID = undefined;
+
+        this.clearWatch();
+    },
     startWatch: function () {
-        PositionService.startPool();
-
         setTimeout(function () {
-            if (this.watchID)
-                navigator.geolocation.clearWatch(this.watchID);
+            try {
 
-            this.watchID = navigator.geolocation.watchPosition(function (position) {
+                PositionService.clearWatch();
+                PositionService.watchID = navigator.geolocation.watchPosition(function (position) {
 
-                var accu = position.coords.accuracy.toFixed(2);
+                    var accu = position.coords.accuracy.toFixed(2);
 
-                app.info(Translator.Translate("Presnosť pozície") + ": " + accu + "m");
-                PositionService.lat = position.coords.latitude;
-                PositionService.lng = position.coords.longitude;
-            }, function (err) {
+                    app.info(Translator.Translate("Presnosť pozície") + ": " + accu + "m");
+                    PositionService.lat = position.coords.latitude;
+                    PositionService.lng = position.coords.longitude;
+
+                }, function (err) {
+                    app.info(err.message);
+                    PositionService.clearWatch();
+                },
+               {
+                   enableHighAccuracy: true,
+                   maximumAge: 3000,
+                   timeout: 27000
+               });
+            }
+            catch (err) {
                 app.info(err.message);
-            },
-            {
-                enableHighAccuracy: true,
-                maximumAge: 3000,
-                timeout: 27000
-            });
+                PositionService.clearWatch();
+            }
         }
         , 1000);
     },
-    startPool: function () {
-        if (this.poolID)
-            clearTimeout(this.poolID);
-        this.poolID = setTimeout(PositionService.pool, 6000);
-    },
-    stopWatch: function () {
-        if (this.poolID)
-            clearTimeout(this.poolID);
-        if (this.watchID)
-            navigator.geolocation.clearWatch(this.watchID);
-        this.poolID = undefined;
+    clearWatch: function () {
+        try {
+            if (PositionService.watchID)
+                navigator.geolocation.clearWatch(PositionService.watchID);
+        }
+        catch (err) { }
+                
+        PositionService.watchID = undefined;
     },
     pool: function () {
-        this.poolID = undefined;
+        //PositionService.poolID = undefined;
             PositionService.callService();
             //try {
             //    app.geolocation.getCurrentPosition(
@@ -157,28 +174,32 @@ var PositionService = {
         //chcek offers
         if ((checkSum_Orders && checkSum_Orders != Service.ordersVer)) {
             var refreshed = true;
+            var onlyInit = false; //je to pociatcony stav, ideme z NULL
+            if (!Service.ordersVer) onlyInit = true;
             Service.ordersVer = checkSum_Orders;
-            app.setStatusBarOffer("New");
-            try
-            {
-                var isSpecial = Service.ordersVer.indexOf("BroadCast") > -1
-                //nova objednavka, alebo broadcast ? 
-                if (isSpecial) {
-                    MediaInternal.playSoundInMedia("Order_Broadcast",1,0);
+
+            if (!onlyInit) {
+                app.setStatusBarOffer("New");
+                try {
+                    var isSpecial = Service.ordersVer.indexOf("BroadCast") > -1
+                    //nova objednavka, alebo broadcast ? 
+                    if (isSpecial) {
+                        MediaInternal.playSoundInMedia("Order_Broadcast", 1, 0);
+                    }
+                    else {
+                        app.playNew();
+                    }
+                    LocalNotification.schedule("orders", "Zmena v objednávkach");
                 }
-                else {
+                catch (err) { //zahrame, aj ak bola chyba !
                     app.playNew();
                 }
-                LocalNotification.schedule("orders", "Zmena v objednávkach");
-            }
-            catch (err) { //zahrame, aj ak bola chyba !
-                app.playNew();
-            }
 
-            //MHP stacia orders a nepotrebujeme transporters ? 
-            //app.refreshData(["orders", "transporters"]);
-            app.refreshData(["orders"]);
-            needRefreshMinutes = false;
+                //MHP stacia orders a nepotrebujeme transporters ? 
+                //app.refreshData(["orders", "transporters"]);
+                app.refreshData(["orders"]);
+                needRefreshMinutes = false;
+            }
         }
 
         //orders messages = spravy k objednavkam
@@ -198,6 +219,21 @@ var PositionService = {
                 needRefreshMinutes = false;
             }
         };
+
+        //permamnet sound on messages
+        var OrderOfferPermanentSound = 0;
+        var set1 = Globals.GetSetItem("OrderOfferPermanentSound");
+        if (set1) OrderOfferPermanentSound = set1;
+        if (OrderOfferPermanentSound == "1" && Service.orders && Service.orders.Items && Service.orders.Items.length>0) {
+
+            var playperm = false;
+            var r = $.grep(Service.orders.Items, function (o) { return o.Status == "Offered"; });
+            if (r.length > 0)
+                playperm = true;
+
+            if(playperm)
+                app.playNew();
+        }
 
         //reservations 
         app.setStatusBarOfferReservation("None");
@@ -229,6 +265,10 @@ var PositionService = {
             }
 
         }
+
+
+
+
 
         //nieco je s transporterom na servri, napr stanoviste 
         if (checkSum_Transporter && checkSum_Transporter != Service.transporterVer) {

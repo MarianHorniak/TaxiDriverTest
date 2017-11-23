@@ -3,8 +3,18 @@
 
 var Navigator = {
     navigate: function (toPoint) {
-        if (window.launchnavigator)
-            window.launchnavigator.navigate(toPoint);
+        if (window.launchnavigator) {
+            window.setTimeout(function () {
+                window.launchnavigator.navigate(
+                    toPoint,
+                    function () {
+                        app.info("Navigácia");
+                    },
+                    function () {
+                        app.showAlert("Navigáciu sa nepodarilo spustiť");
+                    });
+            }, 100);
+        }
     },
     navigateStart: function (order) {
         if (!order)
