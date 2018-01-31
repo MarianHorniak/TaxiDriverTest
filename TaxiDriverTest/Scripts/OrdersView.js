@@ -95,6 +95,8 @@ var OrdersView = function () {
                     //this.DisableOrderCancelOnReserved = false;
                     this.MinuteRest = Tools.minuteDiffOrder(this);
                     this.MinuteRestGui = "";
+                    this.OrderSourceChar = Tools.getOrderSourceIcon(this.OrderSource);
+
 
                     //if (this.MinuteRest < 180 && this.MinuteRest > -180) {
                     //    this.MinuteRestGui = this.MinuteRest.toString() + " min";

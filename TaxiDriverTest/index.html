@@ -61,8 +61,10 @@
 </div>
 <div class="scroll">
   <div class='buttonlist orders-list'></div>
+    
   <button id="unbreakButton" class="ico_submit">Ukončiť prestávku</button>
   <button id="unalarmButton" class="ico_submit">Ukončiť alarm</button>
+    
 </div>
 </script>
 
@@ -83,20 +85,20 @@
         {{/if}}       
 
              <strong>{{this.FormatedDate}} {{this.StatusTranslation}}</strong> <br/>
-             <span  style="background-color:black">●</span>{{this.StartCity}} {{this.StartAddress}} <br/>
+             <span  style="background-color:black">►</span>{{this.StartCity}} {{this.StartAddress}} <br/>
             
 
             {{#if this.ShowOrderEndAddress}}
-                   <span  style="background-color:black">●</span>{{this.EndCity}} {{this.EndAddress}}<br/>
+                   <span  style="background-color:black">◄</span>{{this.EndCity}} {{this.EndAddress}}<br/>
             {{/if}}
         
-           <span  style="background-color:black">●</span>{{this.Persons}} / {{this.SpecialConditions}}  
+           <span  style="background-color:black">▲</span>{{this.Persons}} / {{this.SpecialConditions}}  
             {{#if  this.ShowOrderCustomerPhone}}
                   / {{this.CustomerPhone}} 
             {{/if}}
             / {{this.CustomerName}} 
-           
-                
+            <br/>
+            <span  style="background-color:black">{{this.OrderSourceChar}} {{this.OrderSource}}</span> 
 
     {{else}}
 
@@ -105,21 +107,21 @@
            {{/if}}     
 
             <strong>{{this.FormatedDate}}</strong> <br />
-            <span  style="background-color:black">●</span>{{this.StartCity}} {{this.StartAddress}}<br/>
+            <span  style="background-color:black">►</span> {{this.StartCity}} {{this.StartAddress}}<br/>
 
             {{#if  this.ShowOrderEndAddress}}
-                <span  style="background-color:black">●</span>{{this.EndCity}} {{this.EndAddress}}<br/>
+                <span  style="background-color:black">◄</span> {{this.EndCity}} {{this.EndAddress}}<br/>
             {{/if}}
 
 
-            <span  style="background-color:black">●</span>{{this.Persons}} / {{this.SpecialConditions}}  
+            <span  style="background-color:black">▲</span> {{this.Persons}} / {{this.SpecialConditions}}  
             {{#if  this.ShowOrderCustomerPhone}}
                  / {{this.CustomerPhone}} 
             {{/if}}
             / {{this.CustomerName}} <br />
             
            
-            <span  style="background-color:black">●</span><strong>{{this.StatusTranslation}}</strong>
+            <span  style="background-color:black">{{this.OrderSourceChar}} {{this.OrderSource}}</span>  <strong>{{this.StatusTranslation}}</strong>
             {{#if this.ShowOrdNessCount}}  <span style="background-color:black">  S: {{this.ordmesscount}} </span>    {{/if}}
 
      {{/if}}
@@ -397,7 +399,12 @@
     <button id="statesTitle" class="textHeaderTitle" disabled="disabled">Prerušenia</button>
     <button id="statesSave" class="icon texticon ico_submit">&nbsp;</button>
 </div>
-<div class="scrollBottom"><form id="statesForm"></form><button id="unbreakButton2" class="ico_submit">Ukončiť prestávku</button></div>
+<div class="scrollBottom">
+    <form id="statesForm"></form>
+    <button id="unbreakButton2" class="ico_submit">Ukončiť prestávku</button>
+    <div id="resttime" class="center" style="text-align:center" ></div>
+</div>
+    
 </script>
 
 <script id="statesForm-template" type="text/x-handlebars-template">

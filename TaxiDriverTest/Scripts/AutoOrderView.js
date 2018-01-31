@@ -39,7 +39,10 @@ var AutoOrderView = function (store) {
         });
         try{
             MapUtility.geocode({ 'latLng': new google.maps.LatLng(PositionService.lat, PositionService.lng) }, function (a) {
-                $("#AutoOrderTimeToRealize").val(Globals.constants.OrderDetail_Defauls_timeToRealize);
+                //$("#AutoOrderTimeToRealize").val(Globals.constants.OrderDetail_Defauls_timeToRealize);
+                var AutoOrderTimeToRealize = Globals.GetSetItem("AutoOrderTimeToRealize");
+                if (!AutoOrderTimeToRealize || AutoOrderTimeToRealize == "") AutoOrderTimeToRealize = Globals.constants.OrderDetail_Defauls_timeToRealize;
+                $("#AutoOrderTimeToRealize").val(AutoOrderTimeToRealize);
                 $("#AutoOrderStartCity").val(a.City);
                 $("#AutoOrderStartAddress").val(a.Address);
                 $("#AutoOrderEndCity").val(a.City);
@@ -49,7 +52,9 @@ var AutoOrderView = function (store) {
             });
         }
         catch (err) {
-            $("#AutoOrderTimeToRealize").val(Globals.constants.OrderDetail_Defauls_timeToRealize);
+            var AutoOrderTimeToRealize = Globals.GetSetItem("AutoOrderTimeToRealize");
+            if (!AutoOrderTimeToRealize || AutoOrderTimeToRealize == "") AutoOrderTimeToRealize = Globals.constants.OrderDetail_Defauls_timeToRealize;
+            $("#AutoOrderTimeToRealize").val(AutoOrderTimeToRealize);
             $("#autoorderForm").show();
             app.waiting(false);
         }

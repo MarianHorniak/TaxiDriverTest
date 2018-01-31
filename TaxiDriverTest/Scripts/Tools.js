@@ -73,6 +73,28 @@
             return minutes;
         },
 
+
+        getOrderSourceIcon: function(orderSource)
+        {
+            var ic = "";
+            if (!orderSource) return ic;
+            if (orderSource == "") return ic;
+            if (orderSource == "Phone") ic = "☎";
+            else if (orderSource == "Web") ic = "w";
+            else if (orderSource == "Auto") ic = "￭";
+            else if (orderSource == "AutoDisp") ic = "♦";
+            else if (orderSource == "Web") ic = "w";
+            else ic = "৹";
+                    //case "Phone": = "☎";
+                    //case "Web": = "w";
+                    //case "Auto":= "￭";
+                    //case "AutoDisp": = "♦";
+                    //default:  "৹"; //"࿁";
+
+
+            return ic;
+        },
+
         //rozdiel v minutach od aktualneho datumu pre konkretnu objednavku. 
         minuteDiffOrder: function (order) {
 

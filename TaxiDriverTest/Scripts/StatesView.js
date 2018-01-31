@@ -1,5 +1,6 @@
 var StatesView = function (store) {
     this.index = 2;
+    
     this.initialize = function() {
         this.el = $('<div/>');
     };
@@ -23,12 +24,21 @@ var StatesView = function (store) {
         
 
         $('#unbreakButton2').hide();
+        $('#resttime').hide();
         $("#statesForm").hide();
 
         app.waiting(false);
 
         if (!Globals.constants.DisableMenuOnBreak && Service.transporter.Status == "Break") {
             $('#unbreakButton2').show();
+            $('#resttime').show();
+
+            //timer na zobrazenie zostavajuceho casu
+            if (Globals.BreakStarttimerHandler)
+                clearInterval(Globals.BreakStarttimerHandler);
+            Globals.BreakStarttimerHandler = setInterval(this.TimerRest, 50000);
+            this.TimerRest();
+
             $('#statesSave').hide();
             app.waiting(false);
         }
@@ -45,12 +55,13 @@ var StatesView = function (store) {
             $('#statesSave').show();
 
             self.iscroll.refresh();
-
+            
             $("#HistoryAction").focus();
         }
     };
             
     this.save = function () {
+        
         var f = $("#statesForm");
         f.hide();
         app.waiting();
@@ -64,6 +75,10 @@ var StatesView = function (store) {
             function () {
                 //notify
                 NotificationLocal.Notify("stateschange", data, null, null);
+                var d = new Date();
+                d.setMinutes(d.getMinutes() + parseInt(data.TimeToFree));
+                Globals.BreakStartDate = d;
+                
                 app.home();
             },
             function (d) {
@@ -73,10 +88,23 @@ var StatesView = function (store) {
             });
     };
     this.clear = function () {
-
+        
     };
 
     this.initialize();
+
+    this.TimerRest = function () {
+        if (!Globals.BreakStartDate) {
+            $('#resttime').hide();
+            return;
+        }
+        $('#resttime').show();
+        var diff = (new Date() - Globals.BreakStartDate);
+        var minutes = Math.round(diff / 60000);
+        minutes = -minutes;
+        $('#resttime').text( Translator.Translate("Do konca")+": " + minutes+" min.");
+        console.log("TimerRest tick");
+    };
 }
 
 StatesView.template = Handlebars.compile($("#states-tpl").html());

@@ -289,6 +289,10 @@
     unBreak : function () {
         app.waiting();
         var s = Service.getSettings();
+
+        if (Globals.BreakStarttimerHandler)
+            clearInterval(Globals.BreakStarttimerHandler);
+
         Service.callService("TransporterUnBreak", {
             GUID_Transporter: s.transporterId,
             GUID_sysUser_Driver: s.userId,
@@ -296,6 +300,7 @@
             Longitude: PositionService.lng
         },
             function () {
+
                 app.home(true);
             },
             function (d) {
